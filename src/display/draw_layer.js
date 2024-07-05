@@ -14,7 +14,7 @@
  */
 
 import { DOMSVGFactory } from "./display_utils.js";
-import { shadow } from "../shared/util.js";
+import { AnnotationEditorType, shadow } from "../shared/util.js";
 
 /**
  * Manage the SVGs drawn on top of the page canvas.
@@ -86,7 +86,8 @@ class DrawLayer {
     return clipPathId;
   }
 
-  highlight(outlines, color, opacity, isPathUpdatable = false) {
+  highlight(outlines, color, opacity, isPathUpdatable = false, mode = AnnotationEditorType.HIGHLIGHT) {
+    console.log('draw layer highlight', mode, outlines);
     const id = this.#id++;
     const root = this.#createSVG(outlines.box);
     root.classList.add("highlight");
@@ -95,14 +96,49 @@ class DrawLayer {
     }
     const defs = DrawLayer._svgFactory.createElement("defs");
     root.append(defs);
-    const path = DrawLayer._svgFactory.createElement("path");
-    defs.append(path);
-    const pathId = `path_p${this.pageIndex}_${id}`;
-    path.setAttribute("id", pathId);
-    path.setAttribute("d", outlines.toSVGPath());
-
-    if (isPathUpdatable) {
-      this.#toUpdate.set(id, path);
+    let pathId = `_p${this.pageIndex}_${id}`;
+    let line = null;
+    let path = null;
+    switch (mode) {
+      case AnnotationEditorType.UNDERLINE:
+        pathId += `line${pathId}`;
+        line = DrawLayer._svgFactory.createElement("line");
+        defs.append(line);
+        line.setAttribute("id", pathId);
+        line.setAttribute("x1", "0");
+        line.setAttribute("y1", "100%");
+        line.setAttribute("x2", "0");
+        line.setAttribute("y2", "95%");
+        line.setAttribute("style", "stroke: #000;stroke-width: 2px;");
+        if (isPathUpdatable) {
+          this.#toUpdate.set(id, line);
+        }
+        break;
+      case AnnotationEditorType.STRIKETHROUGH:
+        pathId += `line${pathId}`;
+        line = DrawLayer._svgFactory.createElement("line");
+        defs.append(line);
+        line.setAttribute("id", pathId);
+        line.setAttribute("id", pathId);
+        line.setAttribute("x1", "0");
+        line.setAttribute("y1", "50%");
+        line.setAttribute("x2", "0");
+        line.setAttribute("y2", "55%");
+        line.setAttribute("style", "stroke: #000;stroke-width: 2px;");
+        if (isPathUpdatable) {
+          this.#toUpdate.set(id, line);
+        }
+        break;
+      case AnnotationEditorType.HIGHLIGHT:
+      default:
+        pathId += `path${pathId}`;
+        path = DrawLayer._svgFactory.createElement("path");
+        defs.append(path);
+        path.setAttribute("id", pathId);
+        path.setAttribute("d", outlines.toSVGPath());
+        if (isPathUpdatable) {
+          this.#toUpdate.set(id, path);
+        }
     }
 
     // Create the clipping path for the editor div.

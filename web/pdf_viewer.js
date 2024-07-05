@@ -877,6 +877,7 @@ class PDFViewer {
           if (pdfDocument.isPureXfa) {
             console.warn("Warning: XFA-editing is not implemented.");
           } else if (isValidAnnotationEditorMode(mode)) {
+            // 初始化批注管理器
             this.#annotationEditorUIManager = new AnnotationEditorUIManager(
               this.container,
               viewer,
@@ -935,6 +936,10 @@ class PDFViewer {
           );
         }
 
+        // 开始为每一个页面添加一个阅读器对象
+        // 每一个PDFPageView代表了每一个页面，
+        // 给PDFViewer增加这些页面对象的时候，这些PDFPageViewer对象本身会创造大量的空白div
+        // 给每一个页面作为底的存在
         for (let pageNum = 1; pageNum <= pagesCount; ++pageNum) {
           const pageView = new PDFPageView({
             container: viewerElement,
@@ -958,6 +963,7 @@ class PDFViewer {
         // Set the first `pdfPage` immediately, since it's already loaded,
         // rather than having to repeat the `PDFDocumentProxy.getPage` call in
         // the `this.#ensurePdfPageLoaded` method before rendering can start.
+        // 默认加载第一页
         this._pages[0]?.setPdfPage(firstPdfPage);
 
         if (this._scrollMode === ScrollMode.PAGE) {

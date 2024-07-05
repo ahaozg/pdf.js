@@ -63,6 +63,8 @@ class HighlightEditor extends AnnotationEditor {
 
   #text = "";
 
+  #mode = AnnotationEditorType.HIGHLIGHT;
+
   #thickness;
 
   #methodOfCreation = "";
@@ -101,12 +103,14 @@ class HighlightEditor extends AnnotationEditor {
 
   constructor(params) {
     super({ ...params, name: "highlightEditor" });
+    console.log('highlight constructor', params);
     this.color = params.color || HighlightEditor._defaultColor;
     this.#thickness = params.thickness || HighlightEditor._defaultThickness;
     this.#opacity = params.opacity || HighlightEditor._defaultOpacity;
     this.#boxes = params.boxes || null;
     this.#methodOfCreation = params.methodOfCreation || "";
     this.#text = params.text || "";
+    this.#mode = params.mode || AnnotationEditorType.HIGHLIGHT;
     this._isDraggable = false;
 
     if (params.highlightId > -1) {
@@ -457,6 +461,7 @@ class HighlightEditor extends AnnotationEditor {
     }
     super.setParent(parent);
     this.show(this._isVisible);
+    console.log('mustBeSelected', mustBeSelected);
     if (mustBeSelected) {
       // We select it after the parent has been set.
       this.select();
@@ -493,7 +498,9 @@ class HighlightEditor extends AnnotationEditor {
       parent.drawLayer.highlight(
         this.#highlightOutlines,
         this.color,
-        this.#opacity
+        this.#opacity,
+        false,
+        this.#mode,
       ));
     this.#outlineId = parent.drawLayer.highlightOutline(this.#focusOutlines);
     if (this.#highlightDiv) {
@@ -636,6 +643,7 @@ class HighlightEditor extends AnnotationEditor {
 
   /** @inheritdoc */
   unselect() {
+    console.log('highlight unselect');
     super.unselect();
     if (!this.#outlineId) {
       return;
@@ -742,8 +750,11 @@ class HighlightEditor extends AnnotationEditor {
         this._freeHighlight,
         this._defaultColor,
         this._defaultOpacity,
-        /* isPathUpdatable = */ true
+        /* isPathUpdatable = */ true,
+        this.#mode,
       ));
+    console.log('parent.drawLayer', parent.drawLayer);
+    console.log('this._freeHighlight', this._freeHighlight);
   }
 
   static #highlightMove(parent, event) {

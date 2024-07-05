@@ -530,6 +530,16 @@ const PDFViewerApplication = {
           editorHighlightButton.hidden = false;
         }
 
+        const editorUnderlineButton = appConfig.toolbar?.editorUnderlineButton;
+        if (editorUnderlineButton && AppOptions.get("enableUnderlineEditor")) {
+          editorUnderlineButton.hidden = false;
+        }
+
+        const editorStrikethroughButton = appConfig.toolbar?.editorStrikethroughButton;
+        if (editorStrikethroughButton && AppOptions.get("enableStrikethroughEditor")) {
+          editorStrikethroughButton.hidden = false;
+        }
+
         this.annotationEditorParams = new AnnotationEditorParams(
           appConfig.annotationEditorParams,
           eventBus
@@ -996,6 +1006,7 @@ const PDFViewerApplication = {
     await Promise.all(promises);
   },
 
+  // 加载文档
   /**
    * Opens a new PDF document.
    * @param {Object} args - Accepts any/all of the properties from
@@ -1322,6 +1333,7 @@ const PDFViewerApplication = {
             viewOnLoad,
             initialDest: openAction?.dest,
           });
+          // initialBookMark中包含了一些参数?
           const initialBookmark = this.initialBookmark;
 
           // Initialize the default values, from user preferences.
@@ -1366,6 +1378,15 @@ const PDFViewerApplication = {
             spreadMode = modes.spreadMode;
           }
 
+          // 根据信息调整要展示的页面
+          // 这个方法里面除了设置一些基本信息外，还会创建canvas，即PDF显示的canvas
+          // 渲染完成之后，会将一些基本的视图信息渲染出来
+          // 调用链
+          // PDFViewerApplication#setInitialView -> PDFLinkService#setHash -> PDFViewer#scrollPageIntoView
+          // -> PDFView#set currentScaleValue -> PDFViewer#setScale -> PDFViewer#setScaleUpdatePages
+          // -> EventBus#dispatch -> #webViewerScaleChanging -> PDFViewer#update
+          // -> PDFRenderingQueue#renderHighestPriority -> PDFViewer#forceRendering
+          // -> PDFRenderingQueue#renderView -> PDFPageView#draw
           this.setInitialView(hash, {
             rotation,
             sidebarView,
@@ -2211,7 +2232,7 @@ if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
       // start accepting URLs from foreign origin -- CORS headers on the remote
       // server must be properly configured.
       if (fileOrigin !== viewerOrigin) {
-        throw new Error("file origin does not match viewer's");
+        // throw new Error("file origin does not match viewer's");
       }
     } catch (ex) {
       PDFViewerApplication._documentError("pdfjs-loading-error", {
@@ -2429,6 +2450,7 @@ function webViewerPresentationMode() {
   PDFViewerApplication.requestPresentationMode();
 }
 function webViewerSwitchAnnotationEditorMode(evt) {
+  console.log('webViewerSwitchAnnotationEditorMode', PDFViewerApplication.pdfViewer.annotationEditorMode);
   PDFViewerApplication.pdfViewer.annotationEditorMode = evt;
 }
 function webViewerSwitchAnnotationEditorParams(evt) {
@@ -3203,6 +3225,7 @@ function beforeUnload(evt) {
 }
 
 function webViewerAnnotationEditorStatesChanged(data) {
+  console.log('webViewerAnnotationEditorStatesChanged', data);
   PDFViewerApplication.externalServices.updateEditorStates(data);
 }
 

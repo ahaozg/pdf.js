@@ -156,9 +156,11 @@ class WorkerMessageHandler {
 
       // Check that at least the first page can be successfully loaded,
       // since otherwise the XRef table is definitely not valid.
+      // 至少检查一下第一页是否能够成功加载，否则的话XRef表是有问题的。
       await pdfManager.ensureDoc("checkFirstPage", [recoveryMode]);
       // Check that the last page can be successfully loaded, to ensure that
       // `numPages` is correct, and fallback to walking the entire /Pages-tree.
+      // 确认最后一页也可以被成功加载，这样说明numPages也是对的。
       await pdfManager.ensureDoc("checkLastPage", [recoveryMode]);
 
       const isPureXfa = await pdfManager.ensureDoc("isPureXfa");

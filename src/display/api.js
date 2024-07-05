@@ -230,6 +230,7 @@ const DefaultStandardFontDataFactory =
  * @returns {PDFDocumentLoadingTask}
  */
 function getDocument(src = {}) {
+  console.log('getDocument', src);
   if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
     if (typeof src === "string" || src instanceof URL) {
       src = { url: src };
@@ -2577,6 +2578,7 @@ class WorkerTransport {
         // If stream or range are disabled, it's our only way to report
         // loading progress.
         if (!fullReader.isStreamingSupported || !fullReader.isRangeSupported) {
+          console.log('不支持');
           if (this._lastProgress) {
             loadingTask.onProgress?.(this._lastProgress);
           }

@@ -381,7 +381,7 @@ class Rasterize {
       );
       const drawLayer = new DrawLayer({ pageIndex: 0 });
       drawLayer.setParent(div);
-      drawLayer.highlight(outliner.getOutlines(), "orange", 0.4);
+      drawLayer.highlight(outliner.getOutlines(), "orange", 0.4, false);
       drawLayer.highlightOutline(outlinerForOutline.getOutlines());
 
       svg.append(foreignObject);

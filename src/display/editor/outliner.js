@@ -317,6 +317,70 @@ class HighlightOutline extends Outline {
     return buffer.join(" ");
   }
 
+  toSVGPathUnderline() {
+    console.log('toSVGPathUnderline', this.#outlines);
+    const buffer = [];
+    for (const polygon of this.#outlines) {
+      let [prevX, prevY] = polygon;
+      buffer.push(`M${prevX} ${prevY}`);
+      for (let i = 2; i < polygon.length; i += 2) {
+        const x = polygon[i];
+        const y = polygon[i + 1];
+        if (x === prevX) {
+          buffer.push(`V${y}`);
+          prevY = y;
+        } else if (y === prevY) {
+          buffer.push(`H${x}`);
+          prevX = x;
+        }
+      }
+      buffer.push("Z");
+    }
+    console.log('buffer', buffer);
+    return buffer.join(" ");
+
+    // const buffer = [];
+    // // const halfLineWidth = this.lineWidth / 2; // 线宽的一半，用于在两侧添加偏移
+    // const halfLineWidth = 5; // 线宽的一半，用于在两侧添加偏移
+    //
+    // for (const line of this.#outlines) { // 假设现在处理的是简单的线段数组而非多边形
+    //   const [startX, startY, endX, endY] = line;
+    //
+    //   // 只绘制水平线段
+    //   if (startY === endY) {
+    //     // 添加起始点，考虑到线宽
+    //     buffer.push(`M${startX - halfLineWidth} ${startY}`);
+    //     buffer.push(`L${startX - halfLineWidth} ${startY + this.lineWidth}`);
+    //     buffer.push(`L${endX + halfLineWidth} ${startY + this.lineWidth}`);
+    //     buffer.push(`L${endX + halfLineWidth} ${startY}`);
+    //     buffer.push(`Z`); // 闭合路径以形成带宽度的线段
+    //   }
+    // }
+    //
+    // return buffer.join(" ");
+  }
+
+  toSVGPathStrikethrough() {
+    const buffer = [];
+    for (const polygon of this.#outlines) {
+      let [prevX, prevY] = polygon;
+      buffer.push(`M${prevX} ${prevY}`);
+      for (let i = 2; i < polygon.length; i += 2) {
+        const x = polygon[i];
+        const y = polygon[i + 1];
+        if (x === prevX) {
+          buffer.push(`V${y}`);
+          prevY = y;
+        } else if (y === prevY) {
+          buffer.push(`H${x}`);
+          prevX = x;
+        }
+      }
+      buffer.push("Z");
+    }
+    return buffer.join(" ");
+  }
+
   /**
    * Serialize the outlines into the PDF page coordinate system.
    * @param {Array<number>} _bbox - the bounding box of the annotation.

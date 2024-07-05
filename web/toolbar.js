@@ -86,6 +86,30 @@ class Toolbar {
         },
       },
       {
+        element: options.editorUnderlineButton,
+        eventName: "switchannotationeditormode",
+        eventDetails: {
+          get mode() {
+            const { classList } = options.editorUnderlineButton;
+            return classList.contains("toggled")
+                ? AnnotationEditorType.NONE
+                : AnnotationEditorType.UNDERLINE;
+          },
+        },
+      },
+      {
+        element: options.editorStrikethroughButton,
+        eventName: "switchannotationeditormode",
+        eventDetails: {
+          get mode() {
+            const { classList } = options.editorStrikethroughButton;
+            return classList.contains("toggled")
+                ? AnnotationEditorType.NONE
+                : AnnotationEditorType.STRIKETHROUGH;
+          },
+        },
+      },
+      {
         element: options.editorInkButton,
         eventName: "switchannotationeditormode",
         eventDetails: {
@@ -132,6 +156,12 @@ class Toolbar {
       switch (mode) {
         case AnnotationEditorType.HIGHLIGHT:
           options.editorHighlightButton.click();
+          break;
+        case AnnotationEditorType.UNDERLINE:
+          options.editorUnderlineButton.click();
+          break;
+        case AnnotationEditorType.STRIKETHROUGH:
+          options.editorStrikethroughButton.click();
           break;
       }
     });
@@ -240,6 +270,8 @@ class Toolbar {
     const {
       editorFreeTextButton,
       editorFreeTextParamsToolbar,
+      editorUnderlineButton,
+      editorStrikethroughButton,
       editorHighlightButton,
       editorHighlightParamsToolbar,
       editorInkButton,
@@ -252,6 +284,16 @@ class Toolbar {
       editorFreeTextButton,
       mode === AnnotationEditorType.FREETEXT,
       editorFreeTextParamsToolbar
+    );
+    toggleCheckedBtn(
+        editorUnderlineButton,
+        mode === AnnotationEditorType.UNDERLINE,
+        editorHighlightParamsToolbar
+    );
+    toggleCheckedBtn(
+        editorStrikethroughButton,
+        mode === AnnotationEditorType.STRIKETHROUGH,
+        editorHighlightParamsToolbar
     );
     toggleCheckedBtn(
       editorHighlightButton,
@@ -272,6 +314,8 @@ class Toolbar {
     const isDisable = mode === AnnotationEditorType.DISABLE;
     editorFreeTextButton.disabled = isDisable;
     editorHighlightButton.disabled = isDisable;
+    editorUnderlineButton.disabled = isDisable;
+    editorStrikethroughButton.disabled = isDisable;
     editorInkButton.disabled = isDisable;
     editorStampButton.disabled = isDisable;
   }

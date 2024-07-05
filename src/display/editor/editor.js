@@ -359,6 +359,7 @@ class AnnotationEditor {
    * onfocus callback.
    */
   focusin(event) {
+    console.log('focusin', event);
     if (!this._focusEventsAllowed) {
       return;
     }
@@ -374,6 +375,7 @@ class AnnotationEditor {
    * @param {FocusEvent} event
    */
   focusout(event) {
+    console.log('focusout', event);
     if (!this._focusEventsAllowed) {
       return;
     }
@@ -396,6 +398,7 @@ class AnnotationEditor {
     if (!this.parent?.isMultipleSelection) {
       this.commitOrRemove();
     }
+    this.parent?.unselect(this);
   }
 
   commitOrRemove() {
@@ -1082,12 +1085,14 @@ class AnnotationEditor {
   }
 
   #selectOnPointerEvent(event) {
+    console.log('#selectOnPointerEvent', event);
     const { isMac } = FeatureTest.platform;
     if (
       (event.ctrlKey && !isMac) ||
       event.shiftKey ||
       (event.metaKey && isMac)
     ) {
+      console.log('toggleSelected');
       this.parent.toggleSelected(this);
     } else {
       this.parent.setSelected(this);
@@ -1365,8 +1370,10 @@ class AnnotationEditor {
   /**
    * Remove this editor.
    * It's used on ctrl+backspace action.
+   *
+   * @param {Boolean} forHide 如果只是为了隐藏，那不用调删除方法，如果是为了删除，那就调删除方法
    */
-  remove() {
+  remove(forHide = false) {
     this.div.removeEventListener("focusin", this.#boundFocusin);
     this.div.removeEventListener("focusout", this.#boundFocusout);
 
@@ -1394,6 +1401,10 @@ class AnnotationEditor {
       this.#telemetryTimeouts = null;
     }
     this.parent = null;
+    if (!forHide) {
+      // todo:删除了对象，需要执行该钩子
+      // this._uiManager.hook.postDestory(this);
+    }
   }
 
   /**
@@ -1430,6 +1441,7 @@ class AnnotationEditor {
     ) {
       return;
     }
+    console.log('keydown', event);
     this._uiManager.setSelected(this);
     this.#savedDimensions = {
       savedX: this.x,
@@ -1556,6 +1568,7 @@ class AnnotationEditor {
    * Select this editor.
    */
   select() {
+    console.log('editor select');
     this.makeResizable();
     this.div?.classList.add("selectedEditor");
     if (!this.#editToolbar) {
@@ -1576,6 +1589,7 @@ class AnnotationEditor {
    * Unselect this editor.
    */
   unselect() {
+    console.log('editor unselect');
     this.#resizersDiv?.classList.add("hidden");
     this.div?.classList.remove("selectedEditor");
     if (this.div?.contains(document.activeElement)) {
@@ -1640,6 +1654,7 @@ class AnnotationEditor {
    * @param {boolean} value
    */
   set isEditing(value) {
+    console.log('editor isEditing');
     this.#isEditing = value;
     if (!this.parent) {
       return;

@@ -967,7 +967,9 @@ class AnnotationEditorUIManager {
       : anchorNode;
   }
 
-  highlightSelection(methodOfCreation = "") {
+  // context_menu floating_button
+  highlightSelection(methodOfCreation = "", mode = this.#mode) {
+    console.log('highlightSelection', this.#mode);
     const selection = document.getSelection();
     if (!selection || selection.isCollapsed) {
       return;
@@ -981,12 +983,15 @@ class AnnotationEditorUIManager {
       return;
     }
     selection.empty();
+    let resetMode = false;
     if (this.#mode === AnnotationEditorType.NONE) {
-      this._eventBus.dispatch("showannotationeditorui", {
-        source: this,
-        mode: AnnotationEditorType.HIGHLIGHT,
-      });
-      this.showAllEditors("highlight", true, /* updateButton = */ true);
+      resetMode = true;
+      this.updateToolbar(mode);
+      // this._eventBus.dispatch("showannotationeditorui", {
+      //   source: this,
+      //   mode: AnnotationEditorType.HIGHLIGHT,
+      // });
+      // this.showAllEditors("highlight", true, /* updateButton = */ true);
     }
     for (const layer of this.#allLayers.values()) {
       if (layer.hasTextLayer(textLayer)) {
@@ -998,13 +1003,22 @@ class AnnotationEditorUIManager {
           focusNode,
           focusOffset,
           text,
+          mode,
         });
         break;
       }
     }
+    if (resetMode) {
+      this.updateToolbar(AnnotationEditorType.NONE);
+      // this._eventBus.dispatch("showannotationeditorui", {
+      //   source: this,
+      //   mode: AnnotationEditorType.HIGHLIGHT,
+      // });
+    }
   }
 
   #displayHighlightToolbar() {
+    console.log('#displayHighlightToolbar');
     const selection = document.getSelection();
     if (!selection || selection.isCollapsed) {
       return;
@@ -1051,7 +1065,10 @@ class AnnotationEditorUIManager {
     }
 
     const anchorElement = this.#getAnchorElementForSelection(selection);
+    console.log('anchorNode', anchorNode);
+    console.log('anchorElement', anchorElement);
     const textLayer = anchorElement.closest(".textLayer");
+    console.log('textLayer', textLayer);
     if (!textLayer) {
       if (this.#selectedTextNode) {
         this.#highlightToolbar?.hide();
@@ -1067,16 +1084,19 @@ class AnnotationEditorUIManager {
     this.#dispatchUpdateStates({
       hasSelectedText: true,
     });
-
+    console.log('this.#mode', this.#mode);
+    console.log('AnnotationEditorType', AnnotationEditorType);
     if (
       this.#mode !== AnnotationEditorType.HIGHLIGHT &&
+      this.#mode !== AnnotationEditorType.UNDERLINE &&
+      this.#mode !== AnnotationEditorType.STRIKETHROUGH &&
       this.#mode !== AnnotationEditorType.NONE
     ) {
       return;
     }
 
     if (this.#mode === AnnotationEditorType.HIGHLIGHT) {
-      this.showAllEditors("highlight", true, /* updateButton = */ true);
+      // this.showAllEditors("highlight", true, /* updateButton = */ true);
     }
 
     this.#highlightWhenShiftUp = this.isShiftKeyDown;
@@ -1099,7 +1119,8 @@ class AnnotationEditorUIManager {
   }
 
   #onSelectEnd(methodOfCreation = "") {
-    if (this.#mode === AnnotationEditorType.HIGHLIGHT) {
+    console.log('#onSelectEnd', methodOfCreation);
+    if ([AnnotationEditorType.HIGHLIGHT, AnnotationEditorType.UNDERLINE, AnnotationEditorType.STRIKETHROUGH].includes(this.#mode)) {
       this.highlightSelection(methodOfCreation);
     } else if (this.#enableHighlightFloatingButton) {
       this.#displayHighlightToolbar();
@@ -1393,7 +1414,9 @@ class AnnotationEditorUIManager {
     const hasChanged = Object.entries(details).some(
       ([key, value]) => this.#previousStates[key] !== value
     );
-
+    console.log('details', details);
+    console.log('this.#previousStates', this.#previousStates);
+    console.log('hasChanged', hasChanged);
     if (hasChanged) {
       this._eventBus.dispatch("annotationeditorstateschanged", {
         source: this,
@@ -1406,6 +1429,7 @@ class AnnotationEditorUIManager {
         this.#mode === AnnotationEditorType.HIGHLIGHT &&
         details.hasSelectedEditor === false
       ) {
+        console.log('#dispatchUpdateUI');
         this.#dispatchUpdateUI([
           [AnnotationEditorParamsType.HIGHLIGHT_FREE, true],
         ]);
@@ -1506,6 +1530,7 @@ class AnnotationEditorUIManager {
    *   keyboard action.
    */
   updateMode(mode, editId = null, isFromKeyboard = false) {
+    console.log('updateMode', mode);
     if (this.#mode === mode) {
       return;
     }
@@ -1802,6 +1827,7 @@ class AnnotationEditorUIManager {
    * @param {AnnotationEditor} editor
    */
   toggleSelected(editor) {
+    console.log('toggleSelected');
     if (this.#selectedEditors.has(editor)) {
       this.#selectedEditors.delete(editor);
       editor.unselect();
@@ -1823,6 +1849,7 @@ class AnnotationEditorUIManager {
    * @param {AnnotationEditor} editor
    */
   setSelected(editor) {
+    console.log('setSelected');
     for (const ed of this.#selectedEditors) {
       if (ed !== editor) {
         ed.unselect();
@@ -1855,6 +1882,7 @@ class AnnotationEditorUIManager {
    * @param {AnnotationEditor} editor
    */
   unselect(editor) {
+    console.log('tools unselect');
     editor.unselect();
     this.#selectedEditors.delete(editor);
     this.#dispatchUpdateStates({
@@ -1962,6 +1990,7 @@ class AnnotationEditorUIManager {
    * @param {Array<AnnotationEditor>} editors
    */
   #selectEditors(editors) {
+    console.log('#selectEditors');
     for (const editor of this.#selectedEditors) {
       editor.unselect();
     }
@@ -1990,6 +2019,7 @@ class AnnotationEditorUIManager {
    * Unselect all the selected editors.
    */
   unselectAll() {
+    console.log('unselectAll');
     if (this.#activeEditor) {
       // An editor is being edited so just commit it.
       this.#activeEditor.commitOrRemove();

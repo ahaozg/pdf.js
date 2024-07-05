@@ -30,8 +30,11 @@ const AppConstants =
     ? { LinkTarget, RenderingStates, ScrollMode, SpreadMode }
     : null;
 
+// 阅读器app
 window.PDFViewerApplication = PDFViewerApplication;
+// 常量
 window.PDFViewerApplicationConstants = AppConstants;
+// 配置项
 window.PDFViewerApplicationOptions = AppOptions;
 
 function getViewerConfiguration() {
@@ -55,6 +58,8 @@ function getViewerConfiguration() {
       editorFreeTextParamsToolbar: document.getElementById(
         "editorFreeTextParamsToolbar"
       ),
+      editorUnderlineButton: document.getElementById("editorUnderline"),
+      editorStrikethroughButton: document.getElementById("editorStrikethrough"),
       editorHighlightButton: document.getElementById("editorHighlight"),
       editorHighlightParamsToolbar: document.getElementById(
         "editorHighlightParamsToolbar"

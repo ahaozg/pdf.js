@@ -14,6 +14,9 @@
  */
 
 import { noContextMenu } from "../display_utils.js";
+import {
+  AnnotationEditorType,
+} from "../../shared/util.js";
 
 class EditorToolbar {
   #toolbar = null;
@@ -168,6 +171,8 @@ class HighlightToolbar {
     buttons.className = "buttons";
     editToolbar.append(buttons);
 
+    this.#addUnderlineButton();
+    this.#addStrikethroughButton();
     this.#addHighlightButton();
 
     return editToolbar;
@@ -224,10 +229,42 @@ class HighlightToolbar {
     button.addEventListener(
       "click",
       () => {
-        this.#uiManager.highlightSelection("floating_button");
+        this.#uiManager.highlightSelection("floating_button", AnnotationEditorType.HIGHLIGHT);
       },
       { signal }
     );
+    this.#buttons.append(button);
+  }
+
+  #addUnderlineButton() {
+    const button = document.createElement("button");
+    button.className = "underlineButton";
+    button.tabIndex = 0;
+    button.setAttribute("data-l10n-id", `pdfjs-underline-floating-button1`);
+    const span = document.createElement("span");
+    button.append(span);
+    span.className = "visuallyHidden";
+    span.setAttribute("data-l10n-id", "pdfjs-underline-floating-button-label");
+    button.addEventListener("contextmenu", noContextMenu);
+    button.addEventListener("click", () => {
+      this.#uiManager.highlightSelection("floating_button", AnnotationEditorType.UNDERLINE);
+    });
+    this.#buttons.append(button);
+  }
+
+  #addStrikethroughButton() {
+    const button = document.createElement("button");
+    button.className = "strikethroughButton";
+    button.tabIndex = 0;
+    button.setAttribute("data-l10n-id", `pdfjs-strikethrough-floating-button1`);
+    const span = document.createElement("span");
+    button.append(span);
+    span.className = "visuallyHidden";
+    span.setAttribute("data-l10n-id", "pdfjs-strikethrough-floating-button-label");
+    button.addEventListener("contextmenu", noContextMenu);
+    button.addEventListener("click", () => {
+      this.#uiManager.highlightSelection("floating_button", AnnotationEditorType.STRIKETHROUGH);
+    });
     this.#buttons.append(button);
   }
 }
