@@ -2315,7 +2315,8 @@ class AnnotationEditorUIManager {
         if (width === 0 || height === 0) {
           continue;
         }
-        boxes.push(rotator(x, y, width, height));
+        // 高度放大1.1倍，防止下划线与文字挨着
+        boxes.push(rotator(x, y, width, height * 1.1));
       }
     }
     return boxes.length === 0 ? null : boxes;

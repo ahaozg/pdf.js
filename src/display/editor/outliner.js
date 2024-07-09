@@ -318,16 +318,27 @@ class HighlightOutline extends Outline {
   }
 
   toSVGPathUnderline() {
-    console.log('toSVGPathUnderline', this.#outlines);
     const buffer = [];
     for (const polygon of this.#outlines) {
       let [prevX, prevY] = polygon;
-      buffer.push(`M${prevX} ${prevY}`);
+      let baseY = 0;
       for (let i = 2; i < polygon.length; i += 2) {
         const x = polygon[i];
         const y = polygon[i + 1];
         if (x === prevX) {
-          buffer.push(`V${y}`);
+          baseY = y;
+          break;
+        }
+      }
+      const vHeight = (prevY - baseY);
+      const borderWidth = vHeight * 0.1;
+      const top = baseY + vHeight;
+      buffer.push(`M${prevX} ${top}`);
+      for (let i = 2; i < polygon.length; i += 2) {
+        const x = polygon[i];
+        const y = polygon[i + 1];
+        if (x === prevX) {
+          buffer.push(`V${y < top ? top - borderWidth : top}`);
           prevY = y;
         } else if (y === prevY) {
           buffer.push(`H${x}`);
@@ -336,40 +347,31 @@ class HighlightOutline extends Outline {
       }
       buffer.push("Z");
     }
-    console.log('buffer', buffer);
     return buffer.join(" ");
-
-    // const buffer = [];
-    // // const halfLineWidth = this.lineWidth / 2; // 线宽的一半，用于在两侧添加偏移
-    // const halfLineWidth = 5; // 线宽的一半，用于在两侧添加偏移
-    //
-    // for (const line of this.#outlines) { // 假设现在处理的是简单的线段数组而非多边形
-    //   const [startX, startY, endX, endY] = line;
-    //
-    //   // 只绘制水平线段
-    //   if (startY === endY) {
-    //     // 添加起始点，考虑到线宽
-    //     buffer.push(`M${startX - halfLineWidth} ${startY}`);
-    //     buffer.push(`L${startX - halfLineWidth} ${startY + this.lineWidth}`);
-    //     buffer.push(`L${endX + halfLineWidth} ${startY + this.lineWidth}`);
-    //     buffer.push(`L${endX + halfLineWidth} ${startY}`);
-    //     buffer.push(`Z`); // 闭合路径以形成带宽度的线段
-    //   }
-    // }
-    //
-    // return buffer.join(" ");
   }
 
   toSVGPathStrikethrough() {
     const buffer = [];
     for (const polygon of this.#outlines) {
       let [prevX, prevY] = polygon;
-      buffer.push(`M${prevX} ${prevY}`);
+      let baseY = 0;
       for (let i = 2; i < polygon.length; i += 2) {
         const x = polygon[i];
         const y = polygon[i + 1];
         if (x === prevX) {
-          buffer.push(`V${y}`);
+          baseY = y;
+          break;
+        }
+      }
+      const halfVHeight = (prevY - baseY) * 0.5;
+      const halfBorderWidth = halfVHeight * 0.1;
+      const top = baseY + halfVHeight;
+      buffer.push(`M${prevX} ${top + halfBorderWidth}`);
+      for (let i = 2; i < polygon.length; i += 2) {
+        const x = polygon[i];
+        const y = polygon[i + 1];
+        if (x === prevX) {
+          buffer.push(`V${y < top ? top - halfBorderWidth : top + halfBorderWidth}`);
           prevY = y;
         } else if (y === prevY) {
           buffer.push(`H${x}`);

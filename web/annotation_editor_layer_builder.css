@@ -126,9 +126,6 @@
 .annotationEditorLayer.disabled {
   pointer-events: none;
 }
-.highlightEditor.disabled[role='mark'] {
-  pointer-events: auto;
-}
 
 .annotationEditorLayer.freetextEditing {
   cursor: var(--editorFreeText-editing-cursor);
@@ -863,9 +860,9 @@
       pointer-events: auto;
     }
 
-    &.disabled .internal {
-      pointer-events: none;
-    }
+    /*&.disabled .internal {*/
+    /*  pointer-events: none;*/
+    /*}*/
 
     &.selectedEditor {
       .internal {

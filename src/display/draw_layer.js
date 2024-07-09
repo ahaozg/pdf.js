@@ -96,49 +96,28 @@ class DrawLayer {
     }
     const defs = DrawLayer._svgFactory.createElement("defs");
     root.append(defs);
-    let pathId = `_p${this.pageIndex}_${id}`;
-    let line = null;
-    let path = null;
+
+    const path = DrawLayer._svgFactory.createElement("path");
+    defs.append(path);
+    const pathId = `path_p${this.pageIndex}_${id}`;
+    path.setAttribute("id", pathId);
+    let d = null;
     switch (mode) {
       case AnnotationEditorType.UNDERLINE:
-        pathId += `line${pathId}`;
-        line = DrawLayer._svgFactory.createElement("line");
-        defs.append(line);
-        line.setAttribute("id", pathId);
-        line.setAttribute("x1", "0");
-        line.setAttribute("y1", "100%");
-        line.setAttribute("x2", "0");
-        line.setAttribute("y2", "95%");
-        line.setAttribute("style", "stroke: #000;stroke-width: 2px;");
-        if (isPathUpdatable) {
-          this.#toUpdate.set(id, line);
-        }
+        d = outlines.toSVGPathUnderline();
         break;
       case AnnotationEditorType.STRIKETHROUGH:
-        pathId += `line${pathId}`;
-        line = DrawLayer._svgFactory.createElement("line");
-        defs.append(line);
-        line.setAttribute("id", pathId);
-        line.setAttribute("id", pathId);
-        line.setAttribute("x1", "0");
-        line.setAttribute("y1", "50%");
-        line.setAttribute("x2", "0");
-        line.setAttribute("y2", "55%");
-        line.setAttribute("style", "stroke: #000;stroke-width: 2px;");
-        if (isPathUpdatable) {
-          this.#toUpdate.set(id, line);
-        }
+        d = outlines.toSVGPathStrikethrough();
         break;
       case AnnotationEditorType.HIGHLIGHT:
       default:
-        pathId += `path${pathId}`;
-        path = DrawLayer._svgFactory.createElement("path");
-        defs.append(path);
-        path.setAttribute("id", pathId);
-        path.setAttribute("d", outlines.toSVGPath());
-        if (isPathUpdatable) {
-          this.#toUpdate.set(id, path);
-        }
+        d = outlines.toSVGPath();
+        break;
+    }
+    path.setAttribute("d", d);
+
+    if (isPathUpdatable) {
+      this.#toUpdate.set(id, path);
     }
 
     // Create the clipping path for the editor div.
