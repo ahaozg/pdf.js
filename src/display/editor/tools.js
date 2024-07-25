@@ -1725,6 +1725,7 @@ class AnnotationEditorUIManager {
    * @param {AnnotationEditor} editor
    */
   removeEditor(editor) {
+    console.log('removeEditor', editor);
     if (editor.div.contains(document.activeElement)) {
       if (this.#focusMainContainerTimeoutId) {
         clearTimeout(this.#focusMainContainerTimeoutId);
@@ -1882,7 +1883,7 @@ class AnnotationEditorUIManager {
    * @param {AnnotationEditor} editor
    */
   unselect(editor) {
-    console.log('tools unselect');
+    console.log('tools unselect', editor);
     editor.unselect();
     this.#selectedEditors.delete(editor);
     this.#dispatchUpdateStates({

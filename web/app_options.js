@@ -202,7 +202,7 @@ const defaultOptions = {
   },
   highlightEditorColors: {
     /** @type {string} */
-    value: "yellow=#FFFF98,green=#53FFBC,blue=#80EBFF,pink=#FFCBE6,red=#FF4F5F",
+    value: "red=#FF4F5F,yellow=#FFFF98,green=#53FFBC,blue=#80EBFF,pink=#FFCBE6",
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE,
   },
   historyUpdateUrl: {

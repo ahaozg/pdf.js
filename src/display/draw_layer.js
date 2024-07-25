@@ -72,7 +72,7 @@ class DrawLayer {
     return svg;
   }
 
-  #createClipPath(defs, pathId) {
+  #createClipPath(defs, pathId, otherPathIds = []) {
     const clipPath = DrawLayer._svgFactory.createElement("clipPath");
     defs.append(clipPath);
     const clipPathId = `clip_${pathId}`;
@@ -82,6 +82,15 @@ class DrawLayer {
     clipPath.append(clipPathUse);
     clipPathUse.setAttribute("href", `#${pathId}`);
     clipPathUse.classList.add("clip");
+
+    if (Array.isArray(otherPathIds)) {
+      otherPathIds.forEach(otherPathId => {
+        const clipPathUse = DrawLayer._svgFactory.createElement("use");
+        clipPath.append(clipPathUse);
+        clipPathUse.setAttribute("href", `#${otherPathId}`);
+        clipPathUse.classList.add("clip");
+      });
+    }
 
     return clipPathId;
   }
@@ -101,6 +110,7 @@ class DrawLayer {
     defs.append(path);
     const pathId = `path_p${this.pageIndex}_${id}`;
     path.setAttribute("id", pathId);
+    path.setAttribute("d", outlines.toSVGPath());
     let d = null;
     switch (mode) {
       case AnnotationEditorType.UNDERLINE:
@@ -111,23 +121,37 @@ class DrawLayer {
         break;
       case AnnotationEditorType.HIGHLIGHT:
       default:
-        d = outlines.toSVGPath();
         break;
     }
-    path.setAttribute("d", d);
+    let pathId2 = '';
+    if (mode === AnnotationEditorType.UNDERLINE ||
+      mode === AnnotationEditorType.STRIKETHROUGH) {
+      path.setAttribute("fill-opacity", 0);
+      const path2 = DrawLayer._svgFactory.createElement("path");
+      defs.append(path2);
+      pathId2 = `${pathId}_${mode}`;
+      path2.setAttribute("id", pathId2);
+      path2.setAttribute("d", d);
+    }
 
     if (isPathUpdatable) {
       this.#toUpdate.set(id, path);
     }
 
     // Create the clipping path for the editor div.
-    const clipPathId = this.#createClipPath(defs, pathId);
+    const clipPathId = this.#createClipPath(defs, pathId, pathId2 ? [pathId2] : []);
 
     const use = DrawLayer._svgFactory.createElement("use");
     root.append(use);
     root.setAttribute("fill", color);
     root.setAttribute("fill-opacity", opacity);
     use.setAttribute("href", `#${pathId}`);
+
+    if (pathId2) {
+      const use2 = DrawLayer._svgFactory.createElement("use");
+      root.append(use2);
+      use2.setAttribute("href", `#${pathId2}`);
+    }
 
     this.#mapping.set(id, root);
 

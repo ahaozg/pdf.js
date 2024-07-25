@@ -7,3 +7,11 @@ Makefile
 node_modules/
 examples/node/svgdump/
 examples/node/pdf2png/*.png
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.lock

@@ -865,6 +865,8 @@
     /*}*/
 
     &.selectedEditor {
+      /*div.editor得zIndex是累加的，所以此处设置一个大一些的值*/
+      z-index: 6000 !important;
       .internal {
         cursor: pointer;
       }

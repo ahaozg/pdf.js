@@ -76,7 +76,8 @@ class EditorToolbar {
   #focusOut(e) {
     this.#editor._focusEventsAllowed = true;
     e.preventDefault();
-    e.stopPropagation();
+    // 失焦冒泡到父级，触发编辑器失焦事件
+    // e.stopPropagation();
   }
 
   #addListenersToElement(element) {
