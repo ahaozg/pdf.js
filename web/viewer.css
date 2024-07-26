@@ -22,6 +22,10 @@
   --inline-end: right;
   /*#endif*/
 
+  --annotation-bar-width: 200px;
+  --annotation-bar-transition-duration: 200ms;
+  --annotation-bar-transition-timing-function: ease;
+
   --sidebar-width: 200px;
   --sidebar-transition-duration: 200ms;
   --sidebar-transition-timing-function: ease;
@@ -225,6 +229,7 @@ body {
 body {
   background-color: var(--body-bg-color);
   scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
+  overflow: hidden;
 
   &.wait::before {
     content: "";
@@ -268,6 +273,28 @@ body {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+#annotationBarContainer {
+  position: absolute;
+  inset-block: 32px 0;
+  inset-inline-end: calc(-1 * var(--annotation-bar-width));
+  width: var(--annotation-bar-width);
+  visibility: hidden;
+  z-index: 100;
+  font: message-box;
+  border-top: 1px solid rgb(51 51 51);
+  border-inline-end: var(--doorhanger-border-color-whcm);
+  transition-property: inset-inline-end;
+  transition-duration: var(--annotation-bar-transition-duration);
+  transition-timing-function: var(--annotation-bar-transition-timing-function);
+}
+
+#outerContainer:is(.annotationBarMoving, .annotationBarOpen) #annotationBarContainer {
+  visibility: visible;
+}
+#outerContainer.annotationBarOpen #annotationBarContainer {
+  inset-inline-end: 0;
 }
 
 #sidebarContainer {
@@ -711,7 +738,7 @@ body {
   float: var(--inline-start);
 }
 
-.toolbarButton,
+.toolbarButton:not(.onlyText),
 .secondaryToolbarButton,
 .dialogButton {
   border: none;
@@ -729,7 +756,7 @@ body {
   color: var(--dialog-button-hover-color);
 }
 
-.toolbarButton > span {
+.toolbarButton:not(.onlyText) > span {
   display: inline-block;
   width: 0;
   height: 0;
@@ -848,7 +875,7 @@ body {
   height: 1px;
 }
 
-:is(.toolbarButton, .secondaryToolbarButton, .treeItemToggler)::before,
+:is(.toolbarButton:not(.onlyText), .secondaryToolbarButton, .treeItemToggler)::before,
 .dropdownToolbarButton::after {
   /* All matching images have a size of 16x16
    * All relevant containers have a size of 28x28 */
@@ -866,7 +893,7 @@ body {
   background-color: var(--toolbar-icon-hover-bg-color);
 }
 
-.toolbarButton::before {
+.toolbarButton:not(.onlyText)::before {
   opacity: var(--toolbar-icon-opacity);
   top: 6px;
   left: 6px;

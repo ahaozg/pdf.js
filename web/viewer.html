@@ -95,6 +95,9 @@ See https://github.com/adobe-type-tools/cmap-resources
   <body tabindex="1">
     <div id="outerContainer">
 
+      <!--批注列表容器-->
+      <div id="annotationBarContainer"></div>
+
       <div id="sidebarContainer">
         <div id="toolbarSidebar">
           <div id="toolbarSidebarLeft">
@@ -357,6 +360,10 @@ See https://github.com/adobe-type-tools/cmap-resources
               </div>
               <div id="toolbarViewerRight">
                 <div id="editorModeButtons" class="splitToolbarButton toggled" role="radiogroup">
+                  <button id="annotationBarToggle" class="toolbarButton onlyText" disabled="disabled" title="批注" role="radio"
+                          aria-checked="false" tabindex="38">
+                    <span>批注列表</span>
+                  </button>
                   <button id="editorUnderline" class="toolbarButton" disabled="disabled" title="下划线" role="radio"
                           aria-checked="false" tabindex="37" data-l10n-id="pdfjs-editor-underline-button">
                     <span data-l10n-id="pdfjs-editor-underline-button-label">下划线</span>
