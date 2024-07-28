@@ -46,6 +46,12 @@ const SidebarView = {
   LAYERS: 4,
 };
 
+const SidebarAnnotationView = {
+  UNKNOWN: -1,
+  NONE: 0,
+  LIST: 1, // Default value.
+};
+
 const TextLayerMode = {
   DISABLE: 0,
   ENABLE: 1,
@@ -897,6 +903,7 @@ export {
   SCROLLBAR_PADDING,
   scrollIntoView,
   ScrollMode,
+  SidebarAnnotationView,
   SidebarView,
   SpreadMode,
   TextLayerMode,

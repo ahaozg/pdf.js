@@ -80,6 +80,7 @@ See https://github.com/adobe-type-tools/cmap-resources
           "web-pdf_outline_viewer": "./pdf_outline_viewer.js",
           "web-pdf_presentation_mode": "./pdf_presentation_mode.js",
           "web-pdf_sidebar": "./pdf_sidebar.js",
+          "web-pdf_sidebar_annotation": "./pdf_sidebar_annotation.js",
           "web-pdf_thumbnail_viewer": "./pdf_thumbnail_viewer.js",
           "web-preferences": "./genericcom.js",
           "web-print_service": "./pdf_print_service.js",
@@ -96,7 +97,18 @@ See https://github.com/adobe-type-tools/cmap-resources
     <div id="outerContainer">
 
       <!--批注列表容器-->
-      <div id="annotationBarContainer"></div>
+      <div id="sidebarAnnotationContainer">
+        <div id="toolbarSidebarAnnotation">
+          <div id="toolbarSidebarAnnotationLeft">
+            <div id="toolbarSidebarAnnotationTitle">批注</div>
+          </div>
+          <div id="toolbarSidebarAnnotationRight">
+            <div id="toolbarSidebarAnnotationClose" class="toolbarButton"></div>
+          </div>
+        </div>
+        <div id="sidebarAnnotationContent"></div>
+        <div id="sidebarAnnotationResizer"></div>
+      </div>
 
       <div id="sidebarContainer">
         <div id="toolbarSidebar">
@@ -360,8 +372,7 @@ See https://github.com/adobe-type-tools/cmap-resources
               </div>
               <div id="toolbarViewerRight">
                 <div id="editorModeButtons" class="splitToolbarButton toggled" role="radiogroup">
-                  <button id="annotationBarToggle" class="toolbarButton onlyText" disabled="disabled" title="批注" role="radio"
-                          aria-checked="false" tabindex="38">
+                  <button id="sidebarAnnotationToggle" class="toolbarButton onlyText" title="Toggle Sidebar" tabindex="38" aria-expanded="false" aria-controls="sidebarAnnotationContainer">
                     <span>批注列表</span>
                   </button>
                   <button id="editorUnderline" class="toolbarButton" disabled="disabled" title="下划线" role="radio"

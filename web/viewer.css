@@ -22,9 +22,9 @@
   --inline-end: right;
   /*#endif*/
 
-  --annotation-bar-width: 200px;
-  --annotation-bar-transition-duration: 200ms;
-  --annotation-bar-transition-timing-function: ease;
+  --sidebar-annotation-width: 200px;
+  --sidebar-annotation-transition-duration: 200ms;
+  --sidebar-annotation-transition-timing-function: ease;
 
   --sidebar-width: 200px;
   --sidebar-transition-duration: 200ms;
@@ -88,6 +88,7 @@
   --toolbarButton-editorHighlight-icon: url(images/toolbarButton-editorHighlight.svg);
   --toolbarButton-editorStrikethrough-icon: url(images/toolbarButton-editorStrikethrough.svg);
   --toolbarButton-editorUnderline-icon: url(images/toolbarButton-editorUnderline.svg);
+  --toolbarButton-close-icon: url(images/toolbarButton-close.svg);
   --toolbarButton-editorInk-icon: url(images/toolbarButton-editorInk.svg);
   --toolbarButton-editorStamp-icon: url(images/toolbarButton-editorStamp.svg);
   --toolbarButton-menuArrow-icon: url(images/toolbarButton-menuArrow.svg);
@@ -275,25 +276,26 @@ body {
   position: relative;
 }
 
-#annotationBarContainer {
+#sidebarAnnotationContainer {
   position: absolute;
   inset-block: 32px 0;
-  inset-inline-end: calc(-1 * var(--annotation-bar-width));
-  width: var(--annotation-bar-width);
+  inset-inline-end: calc(-1 * var(--sidebar-annotation-width));
+  width: var(--sidebar-annotation-width);
   visibility: hidden;
   z-index: 100;
   font: message-box;
   border-top: 1px solid rgb(51 51 51);
   border-inline-end: var(--doorhanger-border-color-whcm);
   transition-property: inset-inline-end;
-  transition-duration: var(--annotation-bar-transition-duration);
-  transition-timing-function: var(--annotation-bar-transition-timing-function);
+  transition-duration: var(--sidebar-annotation-transition-duration);
+  transition-timing-function: var(--sidebar-annotation-transition-timing-function);
+  background-color: antiquewhite;
 }
 
-#outerContainer:is(.annotationBarMoving, .annotationBarOpen) #annotationBarContainer {
+#outerContainer:is(.sidebarAnnotationMoving, .sidebarAnnotationOpen) #sidebarAnnotationContainer {
   visibility: visible;
 }
-#outerContainer.annotationBarOpen #annotationBarContainer {
+#outerContainer.sidebarAnnotationOpen #sidebarAnnotationContainer {
   inset-inline-end: 0;
 }
 
@@ -334,6 +336,15 @@ body {
   box-shadow: inset calc(-1px * var(--dir-factor)) 0 0 rgb(0 0 0 / 0.25);
 }
 
+#sidebarAnnotationContent {
+  inset-block: 32px 0;
+  inset-inline-start: 0;
+  overflow: auto;
+  position: absolute;
+  width: 100%;
+  box-shadow: inset calc(-1px * var(--dir-factor)) 0 0 rgb(0 0 0 / 0.25);
+}
+
 #viewerContainer {
   overflow: auto;
   position: absolute;
@@ -348,6 +359,11 @@ body {
 #outerContainer.sidebarOpen #viewerContainer:not(.pdfPresentationMode) {
   inset-inline-start: var(--sidebar-width);
   transition-property: inset-inline-start;
+}
+
+#outerContainer.sidebarAnnotationOpen #viewerContainer:not(.pdfPresentationMode) {
+  inset-inline-end: var(--sidebar-annotation-width);
+  transition-property: inset-inline-end;
 }
 
 .toolbar {
@@ -377,10 +393,43 @@ body {
   border-bottom: var(--toolbarSidebar-border-bottom);
 }
 
+#toolbarSidebarAnnotation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 32px;
+  background-color: var(--sidebar-toolbar-bg-color);
+  box-shadow: var(--toolbarSidebar-box-shadow);
+  border-bottom: var(--toolbarSidebar-border-bottom);
+}
+
+#toolbarSidebarAnnotationLeft {
+  padding-left: 8px;
+}
+
+#toolbarSidebarAnnotationClose {
+  position: relative;
+  cursor: pointer;
+}
+
+#toolbarSidebarAnnotationClose::before {
+  mask-image: var(--toolbarButton-close-icon);
+}
+
 #sidebarResizer {
   position: absolute;
   inset-block: 0;
   inset-inline-end: -6px;
+  width: 6px;
+  z-index: 200;
+  cursor: ew-resize;
+}
+
+#sidebarAnnotationResizer {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: -6px;
   width: 6px;
   z-index: 200;
   cursor: ew-resize;
@@ -419,6 +468,10 @@ body {
 
 #outerContainer.sidebarOpen #loadingBar {
   inset-inline-start: var(--sidebar-width);
+}
+
+#outerContainer.sidebarAnnotationOpen #loadingBar {
+  inset-inline-end: var(--sidebar-annotation-width);
 }
 
 #loadingBar .progress {
@@ -468,7 +521,7 @@ body {
 }
 
 #outerContainer.sidebarResizing
-  :is(#sidebarContainer, #viewerContainer, #loadingBar) {
+  :is(#sidebarContainer, #sidebarAnnotationContainer, #viewerContainer, #loadingBar) {
   /* Improve responsiveness and avoid visual glitches when the sidebar is resized. */
   transition-duration: 0s;
 }

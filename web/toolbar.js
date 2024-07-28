@@ -92,8 +92,8 @@ class Toolbar {
           get mode() {
             const { classList } = options.editorUnderlineButton;
             return classList.contains("toggled")
-                ? AnnotationEditorType.NONE
-                : AnnotationEditorType.UNDERLINE;
+              ? AnnotationEditorType.NONE
+              : AnnotationEditorType.UNDERLINE;
           },
         },
       },
@@ -104,8 +104,8 @@ class Toolbar {
           get mode() {
             const { classList } = options.editorStrikethroughButton;
             return classList.contains("toggled")
-                ? AnnotationEditorType.NONE
-                : AnnotationEditorType.STRIKETHROUGH;
+              ? AnnotationEditorType.NONE
+              : AnnotationEditorType.STRIKETHROUGH;
           },
         },
       },
@@ -286,14 +286,14 @@ class Toolbar {
       editorFreeTextParamsToolbar
     );
     toggleCheckedBtn(
-        editorUnderlineButton,
-        mode === AnnotationEditorType.UNDERLINE,
-        editorHighlightParamsToolbar
+      editorUnderlineButton,
+      mode === AnnotationEditorType.UNDERLINE,
+      editorHighlightParamsToolbar
     );
     toggleCheckedBtn(
-        editorStrikethroughButton,
-        mode === AnnotationEditorType.STRIKETHROUGH,
-        editorHighlightParamsToolbar
+      editorStrikethroughButton,
+      mode === AnnotationEditorType.STRIKETHROUGH,
+      editorHighlightParamsToolbar
     );
     toggleCheckedBtn(
       editorHighlightButton,

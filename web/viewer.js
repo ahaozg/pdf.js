@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-import { RenderingStates, ScrollMode, SpreadMode } from "./ui_utils.js";
+import { PDFViewerApplication } from "./app.js";
 import { AppOptions } from "./app_options.js";
 import { LinkTarget } from "./pdf_link_service.js";
-import { PDFViewerApplication } from "./app.js";
+import { RenderingStates, ScrollMode, SpreadMode } from "./ui_utils.js";
 
 /* eslint-disable-next-line no-unused-vars */
 const pdfjsVersion =
@@ -58,7 +58,6 @@ function getViewerConfiguration() {
       editorFreeTextParamsToolbar: document.getElementById(
         "editorFreeTextParamsToolbar"
       ),
-      annotationToggleButton: document.getElementById("annotationBarToggle"),
       editorUnderlineButton: document.getElementById("editorUnderline"),
       editorStrikethroughButton: document.getElementById("editorStrikethrough"),
       editorHighlightButton: document.getElementById("editorHighlight"),
@@ -120,6 +119,13 @@ function getViewerConfiguration() {
       layersView: document.getElementById("layersView"),
       // View-specific options
       currentOutlineItemButton: document.getElementById("currentOutlineItem"),
+    },
+    sidebarAnnotation: {
+      outerContainer: document.getElementById("outerContainer"),
+      sidebarContainer: document.getElementById("sidebarAnnotationContainer"),
+      toggleButton: document.getElementById("sidebarAnnotationToggle"),
+      resizer: document.getElementById("sidebarAnnotationResizer"),
+      closeButton: document.getElementById("toolbarSidebarAnnotationClose"),
     },
     findBar: {
       bar: document.getElementById("findbar"),

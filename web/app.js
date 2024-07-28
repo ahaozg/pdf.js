@@ -79,6 +79,7 @@ import { PDFPrintServiceFactory } from "web-print_service";
 import { PDFRenderingQueue } from "./pdf_rendering_queue.js";
 import { PDFScriptingManager } from "./pdf_scripting_manager.js";
 import { PDFSidebar } from "web-pdf_sidebar";
+import { PDFSidebarAnnotation } from "web-pdf_sidebar_annotation";
 import { PDFThumbnailViewer } from "web-pdf_thumbnail_viewer";
 import { PDFViewer } from "./pdf_viewer.js";
 import { Preferences } from "web-preferences";
@@ -123,6 +124,8 @@ const PDFViewerApplication = {
   pdfHistory: null,
   /** @type {PDFSidebar} */
   pdfSidebar: null,
+  /** @type {PDFSidebarAnnotation} */
+  pdfSidebarAnnotation: null,
   /** @type {PDFOutlineViewer} */
   pdfOutlineViewer: null,
   /** @type {PDFAttachmentViewer} */
@@ -535,8 +538,12 @@ const PDFViewerApplication = {
           editorUnderlineButton.hidden = false;
         }
 
-        const editorStrikethroughButton = appConfig.toolbar?.editorStrikethroughButton;
-        if (editorStrikethroughButton && AppOptions.get("enableStrikethroughEditor")) {
+        const editorStrikethroughButton =
+          appConfig.toolbar?.editorStrikethroughButton;
+        if (
+          editorStrikethroughButton &&
+          AppOptions.get("enableStrikethroughEditor")
+        ) {
           editorStrikethroughButton.hidden = false;
         }
 
@@ -660,6 +667,15 @@ const PDFViewerApplication = {
           pdfViewer.currentPageNumber
         );
       };
+    }
+
+    if (appConfig.sidebarAnnotation) {
+      this.pdfSidebarAnnotation = new PDFSidebarAnnotation({
+        elements: appConfig.sidebarAnnotation,
+        eventBus,
+        l10n,
+      });
+      this.pdfSidebarAnnotation.onToggled = this.forceRendering.bind(this);
     }
   },
 
@@ -993,6 +1009,7 @@ const PDFViewerApplication = {
 
     this.setTitle();
     this.pdfSidebar?.reset();
+    this.pdfSidebarAnnotation?.reset();
     this.pdfOutlineViewer?.reset();
     this.pdfAttachmentViewer?.reset();
     this.pdfLayerViewer?.reset();
@@ -1749,7 +1766,13 @@ const PDFViewerApplication = {
 
   setInitialView(
     storedHash,
-    { rotation, sidebarView, scrollMode, spreadMode } = {}
+    {
+      rotation,
+      sidebarView,
+      sidebarAnnotationView,
+      scrollMode,
+      spreadMode,
+    } = {}
   ) {
     const setRotation = angle => {
       if (isValidRotation(angle)) {
@@ -1766,6 +1789,7 @@ const PDFViewerApplication = {
     };
     this.isInitialViewSet = true;
     this.pdfSidebar?.setInitialView(sidebarView);
+    this.pdfSidebarAnnotation?.setInitialView(sidebarAnnotationView);
 
     setViewerModes(scrollMode, spreadMode);
 
@@ -2450,7 +2474,10 @@ function webViewerPresentationMode() {
   PDFViewerApplication.requestPresentationMode();
 }
 function webViewerSwitchAnnotationEditorMode(evt) {
-  console.log('webViewerSwitchAnnotationEditorMode', PDFViewerApplication.pdfViewer.annotationEditorMode);
+  console.log(
+    "webViewerSwitchAnnotationEditorMode",
+    PDFViewerApplication.pdfViewer.annotationEditorMode
+  );
   PDFViewerApplication.pdfViewer.annotationEditorMode = evt;
 }
 function webViewerSwitchAnnotationEditorParams(evt) {
@@ -3225,7 +3252,7 @@ function beforeUnload(evt) {
 }
 
 function webViewerAnnotationEditorStatesChanged(data) {
-  console.log('webViewerAnnotationEditorStatesChanged', data);
+  console.log("webViewerAnnotationEditorStatesChanged", data);
   PDFViewerApplication.externalServices.updateEditorStates(data);
 }
 

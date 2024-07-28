@@ -3168,6 +3168,7 @@ class AnnotationLayer {
       }
       elementParams.data = data;
       const element = AnnotationElementFactory.create(elementParams);
+      console.log('AnnotationElementFactory', element)
 
       if (!element.isRenderable) {
         continue;

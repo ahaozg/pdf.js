@@ -393,8 +393,8 @@ class AnnotationEditorLayer {
     // Unselect all the editors in order to let the user select some text
     // without being annoyed by an editor toolbar.
     this.#uiManager.unselectAll();
-    console.log('event', event);
-    console.log('this.#textLayer', this.#textLayer);
+    console.log("event", event);
+    console.log("this.#textLayer", this.#textLayer);
     // 页面不允许高亮，选文字才高亮
     // if (event.target === this.#textLayer.div) {
     //   const { isMac } = FeatureTest.platform;
@@ -606,7 +606,12 @@ class AnnotationEditorLayer {
 
   get #currentEditorType() {
     let mode = this.#uiManager.getMode();
-    if ([AnnotationEditorType.UNDERLINE, AnnotationEditorType.STRIKETHROUGH].includes(mode)) {
+    if (
+      [
+        AnnotationEditorType.UNDERLINE,
+        AnnotationEditorType.STRIKETHROUGH,
+      ].includes(mode)
+    ) {
       mode = AnnotationEditorType.HIGHLIGHT;
     }
     return AnnotationEditorLayer.#editorTypes.get(mode);
@@ -622,12 +627,12 @@ class AnnotationEditorLayer {
    * @returns {AnnotationEditor}
    */
   #createNewEditor(params) {
-    console.log('#createNewEditor', params);
+    console.log("#createNewEditor", params);
     const editorType = this.#currentEditorType;
     const retVal = editorType
-        ? new editorType.prototype.constructor(params)
-        : null;
-    console.log('createNewEditor -> retVal', retVal);
+      ? new editorType.prototype.constructor(params)
+      : null;
+    console.log("createNewEditor -> retVal", retVal);
     if (retVal) {
       // todo: 需要在editor对象构造完后将数据发送出去
       // this.#uiManager.hook.postConstruct(retVal);
@@ -698,7 +703,7 @@ class AnnotationEditorLayer {
     if (editor) {
       this.add(editor);
     }
-    console.log('createAndAddNewEditor -> editor', editor);
+    console.log("createAndAddNewEditor -> editor", editor);
     return editor;
   }
 
@@ -762,7 +767,7 @@ class AnnotationEditorLayer {
    * @param {PointerEvent} event
    */
   pointerup(event) {
-    console.log('annotation edotor layer pointerup', event);
+    console.log("annotation edotor layer pointerup", event);
     const { isMac } = FeatureTest.platform;
     if (event.button !== 0 || (event.ctrlKey && isMac)) {
       // Don't create an editor on right click.
@@ -800,7 +805,7 @@ class AnnotationEditorLayer {
    * @param {PointerEvent} event
    */
   pointerdown(event) {
-    console.log('annotation editor layer pointerdown', event);
+    console.log("annotation editor layer pointerdown", event);
     if (this.#uiManager.getMode() === AnnotationEditorType.HIGHLIGHT) {
       this.enableTextSelection();
     }

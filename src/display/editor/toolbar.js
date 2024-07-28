@@ -14,9 +14,7 @@
  */
 
 import { noContextMenu } from "../display_utils.js";
-import {
-  AnnotationEditorType,
-} from "../../shared/util.js";
+import { AnnotationEditorType } from "../../shared/util.js";
 
 class EditorToolbar {
   #toolbar = null;
@@ -230,7 +228,10 @@ class HighlightToolbar {
     button.addEventListener(
       "click",
       () => {
-        this.#uiManager.highlightSelection("floating_button", AnnotationEditorType.HIGHLIGHT);
+        this.#uiManager.highlightSelection(
+          "floating_button",
+          AnnotationEditorType.HIGHLIGHT
+        );
       },
       { signal }
     );
@@ -248,7 +249,10 @@ class HighlightToolbar {
     span.setAttribute("data-l10n-id", "pdfjs-underline-floating-button-label");
     button.addEventListener("contextmenu", noContextMenu);
     button.addEventListener("click", () => {
-      this.#uiManager.highlightSelection("floating_button", AnnotationEditorType.UNDERLINE);
+      this.#uiManager.highlightSelection(
+        "floating_button",
+        AnnotationEditorType.UNDERLINE
+      );
     });
     this.#buttons.append(button);
   }
@@ -261,10 +265,16 @@ class HighlightToolbar {
     const span = document.createElement("span");
     button.append(span);
     span.className = "visuallyHidden";
-    span.setAttribute("data-l10n-id", "pdfjs-strikethrough-floating-button-label");
+    span.setAttribute(
+      "data-l10n-id",
+      "pdfjs-strikethrough-floating-button-label"
+    );
     button.addEventListener("contextmenu", noContextMenu);
     button.addEventListener("click", () => {
-      this.#uiManager.highlightSelection("floating_button", AnnotationEditorType.STRIKETHROUGH);
+      this.#uiManager.highlightSelection(
+        "floating_button",
+        AnnotationEditorType.STRIKETHROUGH
+      );
     });
     this.#buttons.append(button);
   }
