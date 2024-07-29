@@ -103,7 +103,7 @@ class HighlightEditor extends AnnotationEditor {
 
   constructor(params) {
     super({ ...params, name: "highlightEditor" });
-    console.log('highlight constructor', params);
+    console.log("highlight constructor", params);
     this.color = params.color || HighlightEditor._defaultColor;
     this.#thickness = params.thickness || HighlightEditor._defaultThickness;
     this.#opacity = params.opacity || HighlightEditor._defaultOpacity;
@@ -461,7 +461,7 @@ class HighlightEditor extends AnnotationEditor {
     }
     super.setParent(parent);
     this.show(this._isVisible);
-    console.log('mustBeSelected', mustBeSelected);
+    console.log("mustBeSelected", mustBeSelected);
     if (mustBeSelected) {
       // We select it after the parent has been set.
       this.select();
@@ -500,7 +500,7 @@ class HighlightEditor extends AnnotationEditor {
         this.color,
         this.#opacity,
         false,
-        this.#mode,
+        this.#mode
       ));
     this.#outlineId = parent.drawLayer.highlightOutline(this.#focusOutlines);
     if (this.#highlightDiv) {
@@ -643,7 +643,7 @@ class HighlightEditor extends AnnotationEditor {
 
   /** @inheritdoc */
   unselect() {
-    console.log('highlight unselect');
+    console.log("highlight unselect");
     super.unselect();
     if (!this.#outlineId) {
       return;
@@ -751,10 +751,10 @@ class HighlightEditor extends AnnotationEditor {
         this._defaultColor,
         this._defaultOpacity,
         /* isPathUpdatable = */ true,
-        this.#mode,
+        this.#mode
       ));
-    console.log('parent.drawLayer', parent.drawLayer);
-    console.log('this._freeHighlight', this._freeHighlight);
+    console.log("parent.drawLayer", parent.drawLayer);
+    console.log("this._freeHighlight", this._freeHighlight);
   }
 
   static #highlightMove(parent, event) {
@@ -835,6 +835,22 @@ class HighlightEditor extends AnnotationEditor {
 
   static canCreateNewEmptyEditor() {
     return false;
+  }
+
+  getBoxes() {
+    return this.#boxes;
+  }
+
+  getMethodOfCreation() {
+    return this.#methodOfCreation;
+  }
+
+  getMode() {
+    return this.#mode;
+  }
+
+  getText() {
+    return this.#text;
   }
 }
 

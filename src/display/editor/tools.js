@@ -73,6 +73,10 @@ class IdManager {
   get id() {
     return `${AnnotationEditorPrefix}${this.#id++}`;
   }
+
+  setId(id) {
+    this.#id = id;
+  }
 }
 
 /**
@@ -1493,6 +1497,10 @@ class AnnotationEditorUIManager {
    */
   getId() {
     return this.#idManager.id;
+  }
+
+  setId(id) {
+    this.#idManager.setId(id);
   }
 
   get currentLayer() {

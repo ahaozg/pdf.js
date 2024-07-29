@@ -40,8 +40,8 @@ import {
   TextLayerMode,
 } from "./ui_utils.js";
 import {
-  AnnotationEditorType,
   AnnotationEditorManager,
+  AnnotationEditorType,
   build,
   FeatureTest,
   getDocument,
@@ -412,7 +412,7 @@ const PDFViewerApplication = {
 
     this.annotationEditorManager = new AnnotationEditorManager({
       eventBus,
-    })
+    });
 
     this.overlayManager = new OverlayManager();
 
