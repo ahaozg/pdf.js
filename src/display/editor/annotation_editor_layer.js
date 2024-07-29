@@ -634,8 +634,7 @@ class AnnotationEditorLayer {
       : null;
     console.log("createNewEditor -> retVal", retVal);
     if (retVal) {
-      // todo: 需要在editor对象构造完后将数据发送出去
-      // this.#uiManager.hook.postConstruct(retVal);
+      this.#uiManager.onEditorAddComplete && this.#uiManager.onEditorAddComplete(retVal);
     }
     return retVal;
   }

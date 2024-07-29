@@ -1402,8 +1402,7 @@ class AnnotationEditor {
     }
     this.parent = null;
     if (!forHide) {
-      // todo:删除了对象，需要执行该钩子
-      // this._uiManager.hook.postDestory(this);
+      this._uiManager.onEditorDeleteComplete && this._uiManager.onEditorDeleteComplete(this);
     }
   }
 

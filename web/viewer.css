@@ -289,7 +289,6 @@ body {
   transition-property: inset-inline-end;
   transition-duration: var(--sidebar-annotation-transition-duration);
   transition-timing-function: var(--sidebar-annotation-transition-timing-function);
-  background-color: antiquewhite;
 }
 
 #outerContainer:is(.sidebarAnnotationMoving, .sidebarAnnotationOpen) #sidebarAnnotationContainer {

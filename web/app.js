@@ -41,6 +41,7 @@ import {
 } from "./ui_utils.js";
 import {
   AnnotationEditorType,
+  AnnotationEditorManager,
   build,
   FeatureTest,
   getDocument,
@@ -150,6 +151,8 @@ const PDFViewerApplication = {
   secondaryToolbar: null,
   /** @type {EventBus} */
   eventBus: null,
+  /** @type {AnnotationEditorManager} */
+  annotationEditorManager: null,
   /** @type {IL10n} */
   l10n: null,
   /** @type {AnnotationEditorParams} */
@@ -406,6 +409,10 @@ const PDFViewerApplication = {
       eventBus = new EventBus();
     }
     this.eventBus = eventBus;
+
+    this.annotationEditorManager = new AnnotationEditorManager({
+      eventBus,
+    })
 
     this.overlayManager = new OverlayManager();
 
