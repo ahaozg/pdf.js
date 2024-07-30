@@ -215,6 +215,7 @@ function createWebpackAlias(defines) {
     "web-pdf_presentation_mode": "web/pdf_presentation_mode.js",
     "web-pdf_sidebar": "web/pdf_sidebar.js",
     "web-pdf_sidebar_annotation": "web/pdf_sidebar_annotation.js",
+    "web-pdf_annotation_viewer": "web/paf_annotation_viewer.js",
     "web-pdf_thumbnail_viewer": "web/pdf_thumbnail_viewer.js",
     "web-preferences": "",
     "web-print_service": "",

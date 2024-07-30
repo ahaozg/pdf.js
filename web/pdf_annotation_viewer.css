@@ -1,0 +1,64 @@
+
+.anno-comment-page {
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.anno-comment-page::before {
+  content: attr(aria-label);
+  display: block;
+  margin: 20px 0 8px;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.anno-comment-page .comment-card {
+  margin-bottom: 8px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid rgba(13, 13, 13, .12);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.anno-comment-page .comment-card.is-selected {
+  border-color: rgba(30, 95, 199, 1);
+}
+
+.anno-comment-page .comment-card-main {
+  box-sizing: border-box;
+}
+
+.anno-comment-page .comment-card-main-content {
+  padding-left: 30px;
+  box-sizing: border-box;
+}
+.anno-comment-page .comment-card-main-content.type-strikethrough {
+
+}
+.anno-comment-page .comment-card-main-content.type-underline {
+
+}
+.anno-comment-page .comment-card-main-content.type-highlight {
+
+}
+
+.anno-comment-page .comment-title-wrap {
+  box-sizing: border-box;
+}
+
+.anno-comment-page .comment-title-wrap.type-strikethrough {
+
+}
+
+.anno-comment-page .comment-title-wrap.type-underline {
+
+}
+
+.anno-comment-page .comment-title-wrap.type-highlight {
+
+}
+
+.anno-comment-page .comment-title {
+  box-sizing: border-box;
+}

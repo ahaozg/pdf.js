@@ -394,7 +394,11 @@ class PDFPageView {
       console.error(`#renderAnnotationEditorLayer: "${ex}".`);
       error = ex;
     } finally {
-      this.#dispatchLayerRendered("annotationeditorlayerrendered", error);
+      this.#dispatchLayerRendered("annotationeditorlayerrendered", {
+        source: this,
+        pageNumber: this.id,
+        error
+      });
     }
   }
 

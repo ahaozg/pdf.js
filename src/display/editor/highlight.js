@@ -279,6 +279,7 @@ class HighlightEditor extends AnnotationEditor {
 
   /** @inheritdoc */
   updateParams(type, value) {
+    console.log('updateParams', type, value);
     switch (type) {
       case AnnotationEditorParamsType.HIGHLIGHT_COLOR:
         this.#updateColor(value);
@@ -326,6 +327,7 @@ class HighlightEditor extends AnnotationEditor {
       this.color = col;
       this.parent?.drawLayer.changeColor(this.#id, col);
       this.#colorPicker?.updateColor(col);
+      this._uiManager.onEditorEditComplete && this._uiManager.onEditorEditComplete(this);
     };
     const savedColor = this.color;
     this.addCommands({
@@ -356,6 +358,7 @@ class HighlightEditor extends AnnotationEditor {
     const setThickness = th => {
       this.#thickness = th;
       this.#changeThickness(th);
+      this._uiManager.onEditorEditComplete && this._uiManager.onEditorEditComplete(this);
     };
     this.addCommands({
       cmd: setThickness.bind(this, thickness),
@@ -851,6 +854,18 @@ class HighlightEditor extends AnnotationEditor {
 
   getText() {
     return this.#text;
+  }
+
+  getColor() {
+    return this.color;
+  }
+
+  getOpacity() {
+    return this.#opacity;
+  }
+
+  getThickness() {
+    return this.#thickness;
   }
 }
 

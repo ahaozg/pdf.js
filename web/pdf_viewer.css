@@ -18,6 +18,7 @@
 @import url(xfa_layer_builder.css);
 /* Ignored in GECKOVIEW builds: */
 @import url(annotation_editor_layer_builder.css);
+@import url(pdf_annotation_viewer.css);
 
 :root {
   --viewer-container-height: 0;

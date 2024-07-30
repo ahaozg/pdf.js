@@ -70,13 +70,21 @@ const AnnotationEditorPrefix = "pdfjs_internal_editor_";
 
 const AnnotationEditorType = {
   DISABLE: -1,
+  "-1": "disable",
   NONE: 0,
+  0: "none",
   FREETEXT: 3,
+  3: "freetext",
   HIGHLIGHT: 9,
+  9: "highlight",
   UNDERLINE: 200,
+  200: "underline",
   STRIKETHROUGH: 201,
+  201: "strikethrough",
   STAMP: 13,
+  13: "stamp",
   INK: 15,
+  15: "ink",
 };
 
 const AnnotationEditorParamsType = {

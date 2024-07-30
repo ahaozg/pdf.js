@@ -230,7 +230,6 @@ const DefaultStandardFontDataFactory =
  * @returns {PDFDocumentLoadingTask}
  */
 function getDocument(src = {}) {
-  console.log('getDocument', src);
   if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
     if (typeof src === "string" || src instanceof URL) {
       src = { url: src };

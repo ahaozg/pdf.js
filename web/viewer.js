@@ -126,6 +126,7 @@ function getViewerConfiguration() {
       toggleButton: document.getElementById("sidebarAnnotationToggle"),
       resizer: document.getElementById("sidebarAnnotationResizer"),
       closeButton: document.getElementById("toolbarSidebarAnnotationClose"),
+      commentContainer: document.getElementById("sidebarAnnotationComment"),
     },
     findBar: {
       bar: document.getElementById("findbar"),

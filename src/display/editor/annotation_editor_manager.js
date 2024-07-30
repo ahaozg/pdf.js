@@ -1,5 +1,6 @@
 import { getPdfFilenameFromUrl } from "pdfjs-lib";
 import { AnnotationEditorPrefix } from "../../shared/util.js";
+import { HighlightEditor } from "./highlight.js";
 
 const storageKey = getPdfFilenameFromUrl(window.location.href);
 function getInitAnnotation() {
@@ -44,6 +45,9 @@ class EditorParamsConverter {
 
   fromHighlight(editor) {
     const params = this.fromCommon(editor);
+    params.color = editor.getColor();
+    params.opacity = editor.getOpacity();
+    params.thickness = editor.getThickness();
     params.text = editor.getText();
     params.mode = editor.getMode();
     params.methodOfCreation = editor.getMethodOfCreation();
@@ -101,6 +105,8 @@ class EditorDisplayController {
   }
 
   renderPreparedLayerAnnotations(params, layerIndex) {
+    const oldMode = this.#uiManager.getMode();
+    let lastValidParams = null;
     for (const [id, editorParams] of params) {
       // 两种情况下渲染
       // 一种是 没有传入 layerIndex 按照当前加载的页来渲染
@@ -109,8 +115,13 @@ class EditorDisplayController {
         (!layerIndex || editorParams.pageIndex === layerIndex) &&
         editorParams.hidden !== true
       ) {
-        this.show(id);
+        lastValidParams = this.show(id) || lastValidParams;
       }
+    }
+    // 设置layer的可见状态
+    if (lastValidParams) {
+      this.#uiManager.updateToolbar(lastValidParams.mode);
+      this.#uiManager.updateToolbar(oldMode);
     }
     // const id = this.#uiManager.waitToSelect;
     // let editor = null;
@@ -129,10 +140,34 @@ class EditorDisplayController {
     if (!this.isInParamMap(id)) {
       return;
     }
-    this.doShow(id);
+    return this.doShow(id);
   }
 
-  doShow(id) {}
+  doShow(id) {
+    const editorParam = this.#editorManager.getDataMap().get(id);
+    const pageIndex = editorParam.pageIndex;
+    const layer = this.#uiManager.getLayer(pageIndex);
+
+    if (!layer) {
+      return;
+    }
+
+    const params = Object.assign({}, editorParam);
+    // params.fromCommand = true;
+    params.uiManager = this.#uiManager;
+    params.parent = layer;
+
+    let editor = null;
+
+    switch (params.name) {
+      case "highlightEditor":
+        editor = new HighlightEditor(params);
+        layer.add(editor);
+        break;
+    }
+
+    return params;
+  }
 }
 
 class AnnotationEditorManager {
@@ -147,6 +182,9 @@ class AnnotationEditorManager {
   #boundOnAnnotationEditorUiManager =
     this.onAnnotationEditorUiManager.bind(this);
 
+  #boundOnAnnotationEditorLayerRendered =
+    this.onAnnotationEditorLayerRendered.bind(this);
+
   #dataMap = new Map();
 
   constructor({ eventBus }) {
@@ -155,6 +193,10 @@ class AnnotationEditorManager {
     this._eventBus._on(
       "annotationeditoruimanager",
       this.#boundOnAnnotationEditorUiManager
+    );
+    this._eventBus._on(
+      "annotationeditorlayerrendered",
+      this.#boundOnAnnotationEditorLayerRendered
     );
   }
 
@@ -166,6 +208,10 @@ class AnnotationEditorManager {
     this._eventBus._off(
       "annotationeditoruimanager",
       this.#boundOnAnnotationEditorUiManager
+    );
+    this._eventBus._off(
+      "annotationeditorlayerrendered",
+      this.#boundOnAnnotationEditorLayerRendered
     );
   }
 
@@ -184,6 +230,13 @@ class AnnotationEditorManager {
     this.#uiManager.onEditorDeleteComplete =
       this.onEditorDeleteComplete.bind(this);
     this.initEditorParameters(getInitAnnotation());
+  }
+
+  onAnnotationEditorLayerRendered({ pageNumber }) {
+    this.#editorDisplayController.renderPreparedLayerAnnotations(
+      this.#dataMap,
+      pageNumber - 1
+    );
   }
 
   initEditorParameters(params) {
@@ -208,6 +261,7 @@ class AnnotationEditorManager {
     }
     this.#uiManager.setId(maxId + 1);
     this.#editorDisplayController.renderPreparedLayerAnnotations(this.#dataMap);
+    this.handleDataMapChange("init");
   }
 
   isVirtualId(id) {
@@ -221,30 +275,50 @@ class AnnotationEditorManager {
   onEditorAddComplete(editor) {
     console.log("data-onEditorAddComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
-    this.#dataMap.set(params.id, params);
-    this.updateStore();
+    if (params) {
+      this.#dataMap.set(params.id, params);
+      this.updateStore("add", params);
+    }
   }
 
   onEditorEditComplete(editor) {
     console.log("data-onEditorEditComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
-    this.#dataMap.set(params.id, params);
-    this.updateStore();
+    if (params) {
+      this.#dataMap.set(params.id, params);
+      this.updateStore("edit", params);
+    }
   }
 
   onEditorDeleteComplete(editor) {
     console.log("data-onEditorDeleteComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
-    this.#dataMap.delete(params.id);
-    this.updateStore();
+    if (params) {
+      this.#dataMap.delete(params.id);
+      this.updateStore("delete", params);
+    }
   }
 
-  updateStore() {
+  getEditorParamsList() {
     const data = [];
     for (const [, editorParams] of this.#dataMap) {
       data.push(editorParams);
     }
+    return data;
+  }
+
+  updateStore(type, params) {
+    const data = this.getEditorParamsList();
     setAnnotationData(data);
+    this.handleDataMapChange(type, params);
+  }
+
+  handleDataMapChange(type, data = this.getEditorParamsList()) {
+    this._eventBus.dispatch("annotationeditormanagetdatachange", {
+      source: this,
+      type,
+      data,
+    });
   }
 }
 

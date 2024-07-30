@@ -96,7 +96,6 @@ class DrawLayer {
   }
 
   highlight(outlines, color, opacity, isPathUpdatable = false, mode = AnnotationEditorType.HIGHLIGHT) {
-    console.log('draw layer highlight', mode, outlines);
     const id = this.#id++;
     const root = this.#createSVG(outlines.box);
     root.classList.add("highlight");

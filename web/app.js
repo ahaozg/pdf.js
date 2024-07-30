@@ -67,6 +67,7 @@ import { CaretBrowsingMode } from "./caret_browsing.js";
 import { DownloadManager } from "web-download_manager";
 import { OverlayManager } from "./overlay_manager.js";
 import { PasswordPrompt } from "./password_prompt.js";
+import { PDFAnnotationViewer } from "web-pdf_annotation_viewer";
 import { PDFAttachmentViewer } from "web-pdf_attachment_viewer";
 import { PDFCursorTools } from "web-pdf_cursor_tools";
 import { PDFDocumentProperties } from "web-pdf_document_properties";
@@ -127,6 +128,8 @@ const PDFViewerApplication = {
   pdfSidebar: null,
   /** @type {PDFSidebarAnnotation} */
   pdfSidebarAnnotation: null,
+  /** @type {PDFAnnotationViewer} */
+  pdfAnnotationViewer: null,
   /** @type {PDFOutlineViewer} */
   pdfOutlineViewer: null,
   /** @type {PDFAttachmentViewer} */
@@ -683,6 +686,12 @@ const PDFViewerApplication = {
         l10n,
       });
       this.pdfSidebarAnnotation.onToggled = this.forceRendering.bind(this);
+
+      this.pdfAnnotationViewer = new PDFAnnotationViewer({
+        elements: appConfig.sidebarAnnotation,
+        eventBus,
+        l10n,
+      });
     }
   },
 
@@ -1276,6 +1285,7 @@ const PDFViewerApplication = {
 
   load(pdfDocument) {
     this.pdfDocument = pdfDocument;
+    this.eventBus.dispatch("documentnumpages", pdfDocument.numPages);
 
     pdfDocument.getDownloadInfo().then(({ length }) => {
       this._contentLength = length; // Ensure that the correct length is used.
@@ -2481,10 +2491,6 @@ function webViewerPresentationMode() {
   PDFViewerApplication.requestPresentationMode();
 }
 function webViewerSwitchAnnotationEditorMode(evt) {
-  console.log(
-    "webViewerSwitchAnnotationEditorMode",
-    PDFViewerApplication.pdfViewer.annotationEditorMode
-  );
   PDFViewerApplication.pdfViewer.annotationEditorMode = evt;
 }
 function webViewerSwitchAnnotationEditorParams(evt) {

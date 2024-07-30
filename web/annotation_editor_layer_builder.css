@@ -38,6 +38,9 @@
     0px - (var(--outline-width) + var(--resizer-size)) / 2 -
       var(--outline-around-width)
   );
+  --editor-toolbar-highlight-image: url(images/toolbarButton-editorHighlight.svg);
+  --editor-toolbar-underline-image: url(images/toolbarButton-editorUnderline.svg);
+  --editor-toolbar-strikethrough-image: url(images/toolbarButton-editorStrikethrough.svg);
   --editorFreeText-editing-cursor: text;
   --editorInk-editing-cursor: url(images/cursor-editorInk.svg) 0 16, pointer;
   --editorHighlight-editing-cursor: url(images/cursor-editorTextHighlight.svg)
@@ -202,9 +205,6 @@
   .editToolbar {
     --editor-toolbar-delete-image: url(images/editor-toolbar-delete.svg);
     --editor-toolbar-bg-color: #f0f0f4;
-    --editor-toolbar-highlight-image: url(images/toolbarButton-editorHighlight.svg);
-    --editor-toolbar-underline-image: url(images/toolbarButton-editorUnderline.svg);
-    --editor-toolbar-strikethrough-image: url(images/toolbarButton-editorStrikethrough.svg);
     --editor-toolbar-fg-color: #2e2e56;
     --editor-toolbar-border-color: #8f8f9d;
     --editor-toolbar-hover-border-color: var(--editor-toolbar-border-color);

@@ -335,7 +335,7 @@ body {
   box-shadow: inset calc(-1px * var(--dir-factor)) 0 0 rgb(0 0 0 / 0.25);
 }
 
-#sidebarAnnotationContent {
+#sidebarAnnotationComment {
   inset-block: 32px 0;
   inset-inline-start: 0;
   overflow: auto;
