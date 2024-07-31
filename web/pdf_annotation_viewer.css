@@ -19,6 +19,7 @@
   border: 1px solid rgba(13, 13, 13, .12);
   border-radius: 8px;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .anno-comment-page .comment-card.is-selected {
@@ -30,29 +31,47 @@
 }
 
 .anno-comment-page .comment-card-main-content {
-  padding-left: 30px;
+  position: relative;
+  padding-left: 20px;
   box-sizing: border-box;
 }
-.anno-comment-page .comment-card-main-content.type-strikethrough {
-
+.anno-comment-page .comment-card-main-content::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
-.anno-comment-page .comment-card-main-content.type-underline {
-
+.anno-comment-page .comment-card-main-content.type-strikethrough::before {
+  background-image: var(--editor-toolbar-strikethrough-image);
 }
-.anno-comment-page .comment-card-main-content.type-highlight {
-
+.anno-comment-page .comment-card-main-content.type-underline::before {
+  background-image: var(--editor-toolbar-underline-image);
+}
+.anno-comment-page .comment-card-main-content.type-highlight::before {
+  background-image: var(--editor-toolbar-highlight-image);
 }
 
 .anno-comment-page .comment-title-wrap {
+  display: block;
+  font-size: 14px;
+  line-height: 22px;
+  max-height: 66px;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
 .anno-comment-page .comment-title-wrap.type-strikethrough {
-
+  text-decoration: line-through;
 }
 
-.anno-comment-page .comment-title-wrap.type-underline {
-
+.anno-comment-page .comment-card-main-content.type-underline .comment-title-wrap {
+  text-decoration: underline;
+  text-underline-position: under;
 }
 
 .anno-comment-page .comment-title-wrap.type-highlight {
@@ -60,5 +79,30 @@
 }
 
 .anno-comment-page .comment-title {
+  color: #3d4757;
   box-sizing: border-box;
+}
+
+.anno-comment-page .comment-card-main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0 16px 20px;
+  font-size: 14px;
+  line-height: 22px;
+  margin-top: 4px;
+}
+
+.anno-comment-page .comment-card-main-header .comment-user {
+  margin-right: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: rgba(13, 13, 13, .66);
+}
+
+.anno-comment-page .comment-card-main-header .comment-time {
+  color: rgba(13, 13, 13, .46);
+  text-align: right;
+  white-space: nowrap;
 }

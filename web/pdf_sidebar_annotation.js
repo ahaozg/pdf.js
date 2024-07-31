@@ -226,6 +226,10 @@ class PDFSidebarAnnotation {
     } else {
       this.open();
     }
+    this.eventBus.dispatch("sidebarannotationtoggle", {
+      source: this,
+      isOpen: this.isOpen,
+    });
   }
 
   #dispatchEvent() {

@@ -58,6 +58,7 @@ function getViewerConfiguration() {
       editorFreeTextParamsToolbar: document.getElementById(
         "editorFreeTextParamsToolbar"
       ),
+      editorNoteButton: document.getElementById("editorNote"),
       editorUnderlineButton: document.getElementById("editorUnderline"),
       editorStrikethroughButton: document.getElementById("editorStrikethrough"),
       editorHighlightButton: document.getElementById("editorHighlight"),

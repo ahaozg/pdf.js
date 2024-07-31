@@ -71,11 +71,11 @@ class IdManager {
    * @returns {string}
    */
   get id() {
-    return `${AnnotationEditorPrefix}${this.#id++}`;
-  }
-
-  setId(id) {
-    this.#id = id;
+    // return `${AnnotationEditorPrefix}${this.#id++}`;
+    const timestamp = Date.now().toString(16);
+    const randomPart = Math.floor(Math.random() * 0x1000000).toString(16);
+    const randomPartPadded = randomPart.padStart(6, "0");
+    return `${AnnotationEditorPrefix}${timestamp}${randomPartPadded}`;
   }
 }
 
@@ -1492,10 +1492,6 @@ class AnnotationEditorUIManager {
    */
   getId() {
     return this.#idManager.id;
-  }
-
-  setId(id) {
-    this.#idManager.setId(id);
   }
 
   get currentLayer() {

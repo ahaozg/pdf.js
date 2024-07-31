@@ -557,6 +557,11 @@ const PDFViewerApplication = {
           editorStrikethroughButton.hidden = false;
         }
 
+        const editorNoteButton = appConfig.toolbar?.editorNoteButton;
+        if (editorNoteButton && AppOptions.get("enableNoteEditor")) {
+          editorNoteButton.hidden = false;
+        }
+
         this.annotationEditorParams = new AnnotationEditorParams(
           appConfig.annotationEditorParams,
           eventBus
@@ -691,6 +696,7 @@ const PDFViewerApplication = {
         elements: appConfig.sidebarAnnotation,
         eventBus,
         l10n,
+        pdfViewer,
       });
     }
   },
@@ -1035,6 +1041,8 @@ const PDFViewerApplication = {
     this.toolbar?.reset();
     this.secondaryToolbar?.reset();
     this._PDFBug?.cleanup();
+
+    // todo: 需要reset 和 销毁
 
     await Promise.all(promises);
   },

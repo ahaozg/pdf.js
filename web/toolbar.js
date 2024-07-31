@@ -110,6 +110,18 @@ class Toolbar {
         },
       },
       {
+        element: options.editorNoteButton,
+        eventName: "switchannotationeditormode",
+        eventDetails: {
+          get mode() {
+            const { classList } = options.editorNoteButton;
+            return classList.contains("toggled")
+              ? AnnotationEditorType.NONE
+              : AnnotationEditorType.NOTE;
+          },
+        },
+      },
+      {
         element: options.editorInkButton,
         eventName: "switchannotationeditormode",
         eventDetails: {
@@ -162,6 +174,9 @@ class Toolbar {
           break;
         case AnnotationEditorType.STRIKETHROUGH:
           options.editorStrikethroughButton.click();
+          break;
+        case AnnotationEditorType.NOTE:
+          options.editorNoteButton.click();
           break;
       }
     });
@@ -272,6 +287,7 @@ class Toolbar {
       editorFreeTextParamsToolbar,
       editorUnderlineButton,
       editorStrikethroughButton,
+      editorNoteButton,
       editorHighlightButton,
       editorHighlightParamsToolbar,
       editorInkButton,
@@ -295,6 +311,12 @@ class Toolbar {
       mode === AnnotationEditorType.STRIKETHROUGH,
       editorHighlightParamsToolbar
     );
+    // todo: 修改第三个参数
+    toggleCheckedBtn(
+      editorNoteButton,
+      mode === AnnotationEditorType.NOTE,
+      editorHighlightParamsToolbar
+    );
     toggleCheckedBtn(
       editorHighlightButton,
       mode === AnnotationEditorType.HIGHLIGHT,
@@ -316,6 +338,7 @@ class Toolbar {
     editorHighlightButton.disabled = isDisable;
     editorUnderlineButton.disabled = isDisable;
     editorStrikethroughButton.disabled = isDisable;
+    editorNoteButton.disabled = isDisable;
     editorInkButton.disabled = isDisable;
     editorStampButton.disabled = isDisable;
   }

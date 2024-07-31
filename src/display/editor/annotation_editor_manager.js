@@ -107,7 +107,7 @@ class EditorDisplayController {
   renderPreparedLayerAnnotations(params, layerIndex) {
     const oldMode = this.#uiManager.getMode();
     let lastValidParams = null;
-    for (const [id, editorParams] of params) {
+    for (const [id, { editorParams }] of params) {
       // 两种情况下渲染
       // 一种是 没有传入 layerIndex 按照当前加载的页来渲染
       // 一种是传入了layerIndex，那么就只渲染传入的layerIndex
@@ -129,6 +129,13 @@ class EditorDisplayController {
     //   return;
     // }
     // this.#uiManager.setSelected(editor);
+    this.#editorManager._eventBus.dispatch(
+      "annotationeditormanagerrenderlayer",
+      {
+        source: this,
+        pageIndex: layerIndex,
+      }
+    );
   }
 
   show(id) {
@@ -144,15 +151,15 @@ class EditorDisplayController {
   }
 
   doShow(id) {
-    const editorParam = this.#editorManager.getDataMap().get(id);
-    const pageIndex = editorParam.pageIndex;
+    const { editorParams } = this.#editorManager.getDataMap().get(id);
+    const pageIndex = editorParams.pageIndex;
     const layer = this.#uiManager.getLayer(pageIndex);
 
     if (!layer) {
       return;
     }
 
-    const params = Object.assign({}, editorParam);
+    const params = Object.assign({}, editorParams);
     // params.fromCommand = true;
     params.uiManager = this.#uiManager;
     params.parent = layer;
@@ -244,22 +251,13 @@ class AnnotationEditorManager {
       return;
     }
 
-    let maxId = -1;
     for (const param of params) {
-      if (!param.id) {
+      if (!param.annoId) {
         continue;
       }
-      const editorId = param.id;
+      const editorId = param.annoId;
       this.#dataMap.set(editorId, param);
-      const number = parseInt(editorId.replace(AnnotationEditorPrefix, ""));
-      if (isNaN(number)) {
-        continue;
-      }
-      if (number > maxId) {
-        maxId = number;
-      }
     }
-    this.#uiManager.setId(maxId + 1);
     this.#editorDisplayController.renderPreparedLayerAnnotations(this.#dataMap);
     this.handleDataMapChange("init");
   }
@@ -276,8 +274,14 @@ class AnnotationEditorManager {
     console.log("data-onEditorAddComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
     if (params) {
-      this.#dataMap.set(params.id, params);
-      this.updateStore("add", params);
+      this.#dataMap.set(params.id, {
+        annoId: params.id,
+        editorParams: params,
+        comment: [],
+        creator: { name: "匿名" },
+        createTime: Date.now(),
+      });
+      this.updateStore("add", this.#dataMap.get(params.id));
     }
   }
 
@@ -285,8 +289,9 @@ class AnnotationEditorManager {
     console.log("data-onEditorEditComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
     if (params) {
-      this.#dataMap.set(params.id, params);
-      this.updateStore("edit", params);
+      const target = this.#dataMap.get(params.id);
+      target.editorParams = params;
+      this.updateStore("edit", target);
     }
   }
 
@@ -294,15 +299,16 @@ class AnnotationEditorManager {
     console.log("data-onEditorDeleteComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
     if (params) {
+      const target = this.#dataMap.get(params.id);
       this.#dataMap.delete(params.id);
-      this.updateStore("delete", params);
+      this.updateStore("delete", target);
     }
   }
 
   getEditorParamsList() {
     const data = [];
-    for (const [, editorParams] of this.#dataMap) {
-      data.push(editorParams);
+    for (const [, params] of this.#dataMap) {
+      data.push(params);
     }
     return data;
   }

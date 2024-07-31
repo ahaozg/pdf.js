@@ -88,6 +88,7 @@
   --toolbarButton-editorHighlight-icon: url(images/toolbarButton-editorHighlight.svg);
   --toolbarButton-editorStrikethrough-icon: url(images/toolbarButton-editorStrikethrough.svg);
   --toolbarButton-editorUnderline-icon: url(images/toolbarButton-editorUnderline.svg);
+  --toolbarButton-editorNote-icon: url(images/toolbarButton-editorNote.svg);
   --toolbarButton-close-icon: url(images/toolbarButton-close.svg);
   --toolbarButton-editorInk-icon: url(images/toolbarButton-editorInk.svg);
   --toolbarButton-editorStamp-icon: url(images/toolbarButton-editorStamp.svg);
@@ -1014,6 +1015,14 @@ body {
 
 #editorUnderline::before{
   mask-image: var(--toolbarButton-editorUnderline-icon);
+}
+
+#editorNote::before{
+  width: 24px;
+  height: 24px;
+  top: 2px;
+  left: 2px;
+  mask-image: var(--toolbarButton-editorNote-icon);
 }
 
 #editorInk::before {

@@ -279,7 +279,6 @@ class HighlightEditor extends AnnotationEditor {
 
   /** @inheritdoc */
   updateParams(type, value) {
-    console.log('updateParams', type, value);
     switch (type) {
       case AnnotationEditorParamsType.HIGHLIGHT_COLOR:
         this.#updateColor(value);
@@ -464,7 +463,6 @@ class HighlightEditor extends AnnotationEditor {
     }
     super.setParent(parent);
     this.show(this._isVisible);
-    console.log("mustBeSelected", mustBeSelected);
     if (mustBeSelected) {
       // We select it after the parent has been set.
       this.select();
@@ -646,7 +644,6 @@ class HighlightEditor extends AnnotationEditor {
 
   /** @inheritdoc */
   unselect() {
-    console.log("highlight unselect");
     super.unselect();
     if (!this.#outlineId) {
       return;

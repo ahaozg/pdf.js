@@ -41,6 +41,7 @@
   --editor-toolbar-highlight-image: url(images/toolbarButton-editorHighlight.svg);
   --editor-toolbar-underline-image: url(images/toolbarButton-editorUnderline.svg);
   --editor-toolbar-strikethrough-image: url(images/toolbarButton-editorStrikethrough.svg);
+  --editor-toolbar-note-image: url(images/toolbarButton-editorNote.svg);
   --editorFreeText-editing-cursor: text;
   --editorInk-editing-cursor: url(images/cursor-editorInk.svg) 0 16, pointer;
   --editorHighlight-editing-cursor: url(images/cursor-editorTextHighlight.svg)

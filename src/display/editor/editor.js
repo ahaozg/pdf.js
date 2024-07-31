@@ -359,7 +359,6 @@ class AnnotationEditor {
    * onfocus callback.
    */
   focusin(event) {
-    console.log('focusin', event);
     if (!this._focusEventsAllowed) {
       return;
     }
@@ -375,7 +374,6 @@ class AnnotationEditor {
    * @param {FocusEvent} event
    */
   focusout(event) {
-    console.log('focusout', event);
     if (!this._focusEventsAllowed) {
       return;
     }
@@ -399,6 +397,10 @@ class AnnotationEditor {
       this.commitOrRemove();
     }
     this.parent?.unselect(this);
+    this._uiManager._eventBus.dispatch("editorfocusout", {
+      source: this,
+      event,
+    });
   }
 
   commitOrRemove() {
@@ -1085,14 +1087,12 @@ class AnnotationEditor {
   }
 
   #selectOnPointerEvent(event) {
-    console.log('#selectOnPointerEvent', event);
     const { isMac } = FeatureTest.platform;
     if (
       (event.ctrlKey && !isMac) ||
       event.shiftKey ||
       (event.metaKey && isMac)
     ) {
-      console.log('toggleSelected');
       this.parent.toggleSelected(this);
     } else {
       this.parent.setSelected(this);
@@ -1440,7 +1440,6 @@ class AnnotationEditor {
     ) {
       return;
     }
-    console.log('keydown', event);
     this._uiManager.setSelected(this);
     this.#savedDimensions = {
       savedX: this.x,
@@ -1567,7 +1566,6 @@ class AnnotationEditor {
    * Select this editor.
    */
   select() {
-    console.log('editor select');
     this.makeResizable();
     this.div?.classList.add("selectedEditor");
     if (!this.#editToolbar) {
@@ -1588,7 +1586,6 @@ class AnnotationEditor {
    * Unselect this editor.
    */
   unselect() {
-    console.log('editor unselect');
     this.#resizersDiv?.classList.add("hidden");
     this.div?.classList.remove("selectedEditor");
     if (this.div?.contains(document.activeElement)) {
@@ -1653,7 +1650,6 @@ class AnnotationEditor {
    * @param {boolean} value
    */
   set isEditing(value) {
-    console.log('editor isEditing');
     this.#isEditing = value;
     if (!this.parent) {
       return;
