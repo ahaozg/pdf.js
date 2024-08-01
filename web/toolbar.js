@@ -311,12 +311,7 @@ class Toolbar {
       mode === AnnotationEditorType.STRIKETHROUGH,
       editorHighlightParamsToolbar
     );
-    // todo: 修改第三个参数
-    toggleCheckedBtn(
-      editorNoteButton,
-      mode === AnnotationEditorType.NOTE,
-      editorHighlightParamsToolbar
-    );
+    toggleCheckedBtn(editorNoteButton, mode === AnnotationEditorType.NOTE);
     toggleCheckedBtn(
       editorHighlightButton,
       mode === AnnotationEditorType.HIGHLIGHT,

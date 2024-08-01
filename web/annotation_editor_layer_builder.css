@@ -47,9 +47,27 @@
   --editorHighlight-editing-cursor: url(images/cursor-editorTextHighlight.svg)
       24 24,
     text;
+  --editorUnderline-editing-cursor: url(images/cursor-editorTextUnderline.svg)
+  24 24,
+  text;
+  --editorStrikethrough-editing-cursor: url(images/cursor-editorTextStrikethrough.svg)
+  24 24,
+  text;
+  --editorNote-editing-cursor: url(images/cursor-editorTextNote.svg)
+  24 24,
+  text;
   --editorFreeHighlight-editing-cursor: url(images/cursor-editorFreeHighlight.svg)
       1 18,
     pointer;
+  --editorFreeUnderline-editing-cursor: url(images/cursor-editorFreeUnderline.svg)
+  1 18,
+  pointer;
+  --editorFreeStrikethrough-editing-cursor: url(images/cursor-editorFreeStrikethrough.svg)
+  1 18,
+  pointer;
+  --editorFreeNote-editing-cursor: url(images/cursor-editorFreeNote.svg)
+  1 18,
+  pointer;
 }
 
 /* The following class is used to hide an element but keep it available to
@@ -77,6 +95,29 @@
 
   &.free span {
     cursor: var(--editorFreeHighlight-editing-cursor);
+  }
+}
+
+.textLayer.underlining {
+  cursor: var(--editorFreeUnderline-editing-cursor);
+
+  &:not(.free) span {
+    cursor: var(--editorUnderline-editing-cursor);
+  }
+
+  &.free span {
+    cursor: var(--editorFreeUnderline-editing-cursor);
+  }
+}
+.textLayer.striking {
+  cursor: var(--editorFreeStrikethrough-editing-cursor);
+
+  &:not(.free) span {
+    cursor: var(--editorStrikethrough-editing-cursor);
+  }
+
+  &.free span {
+    cursor: var(--editorFreeStrikethrough-editing-cursor);
   }
 }
 
@@ -135,11 +176,15 @@
   cursor: var(--editorFreeText-editing-cursor);
 }
 
+.annotationEditorLayer.noteEditing {
+  cursor: var(--editorFreeNote-editing-cursor);
+}
+
 .annotationEditorLayer.inkEditing {
   cursor: var(--editorInk-editing-cursor);
 }
 
-.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor) {
+.annotationEditorLayer :is(.freeTextEditor, .noteEditor, .inkEditor, .stampEditor) {
   position: absolute;
   background: transparent;
   z-index: 1;
@@ -201,7 +246,7 @@
 }
 
 .annotationEditorLayer
-  :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor),
+  :is(.freeTextEditor, .noteEditor, .inkEditor, .stampEditor, .highlightEditor),
 .textLayer {
   .editToolbar {
     --editor-toolbar-delete-image: url(images/editor-toolbar-delete.svg);
@@ -461,6 +506,35 @@
   }
 }
 
+.annotationEditorLayer .noteEditor {
+  position: absolute;
+  border-radius: 4px;
+  cursor: pointer;
+  resize: none;
+  touch-action: none;
+  transform-origin: 0 0;
+  z-index: 1;
+  background-color: rgba(255, 166, 0, 0.6);
+  pointer-events: auto;
+}
+
+.annotationEditorLayer .noteEditor .internal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  font: 10px sans-serif;
+  line-height: 28px;
+}
+
+.annotation-note {
+  height: 24px;
+  width: 24px;
+  background-image: var(--toolbarButton-editorNote-icon);
+}
+
 .annotationEditorLayer .freeTextEditor {
   padding: calc(var(--freetext-padding) * var(--scale-factor));
   width: auto;
@@ -534,7 +608,7 @@
 }
 
 .annotationEditorLayer {
-  :is(.freeTextEditor, .inkEditor, .stampEditor) {
+  :is(.freeTextEditor, .noteEditor, .inkEditor, .stampEditor) {
     & > .resizers {
       position: absolute;
       inset: 0;

@@ -81,6 +81,8 @@ const AnnotationEditorType = {
   200: "underline",
   STRIKETHROUGH: 201,
   201: "strikethrough",
+  NOTE: 202,
+  202: "note",
   STAMP: 13,
   13: "stamp",
   INK: 15,

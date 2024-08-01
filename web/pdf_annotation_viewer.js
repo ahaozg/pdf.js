@@ -2,6 +2,7 @@
 /** @typedef {import("./interfaces.js").IL10n} IL10n */
 
 import { AnnotationEditorType } from "../src/shared/util.js";
+import { TextareaPrompt } from "./textarea_prompt.js";
 
 function timestampToYMDHMS(timestamp) {
   if (!timestamp) {
@@ -35,9 +36,13 @@ class PDFAnnotationViewer {
 
   #boundEditorFocusOut = this.onEditorFocusOut.bind(this);
 
-  #boundAnnotationeditormanagerrenderlayer = this.onAnnotationeditormanagerrenderlayer.bind(this);
+  #boundAnnotationeditormanagerrenderlayer =
+    this.onAnnotationeditormanagerrenderlayer.bind(this);
 
   #boundSidebarAnnotationToggle = this.onSidebarAnnotationToggle.bind(this);
+
+  #boundAnnotationViewerPositionById =
+    this.onAnnotationViewerPositionById.bind(this);
 
   #pages = new Map();
 
@@ -59,6 +64,10 @@ class PDFAnnotationViewer {
     this._eventBus._on(
       "sidebarannotationtoggle",
       this.#boundSidebarAnnotationToggle
+    );
+    this._eventBus._on(
+      "annotationviewerpositionbyid",
+      this.#boundAnnotationViewerPositionById
     );
   }
 
@@ -87,6 +96,10 @@ class PDFAnnotationViewer {
       "sidebarannotationtoggle",
       this.#boundSidebarAnnotationToggle
     );
+    this._eventBus._off(
+      "annotationviewerpositionbyid",
+      this.#boundAnnotationViewerPositionById
+    );
   }
 
   onDocumentNumPages(numPages) {
@@ -106,7 +119,6 @@ class PDFAnnotationViewer {
   }
 
   onAnnotationEditorManagerDataChange({ type, data }) {
-    console.log("onAnnotationEditorManagerDataChange", type, data);
     switch (type) {
       case "init":
         this.handleInitData(data);
@@ -222,6 +234,23 @@ class PDFAnnotationViewer {
       this.commentContainer.scrollTo({ top: offsetTop });
     }
   }
+
+  onAnnotationViewerPositionById({ id, pageIndex }) {
+    const target = this.commentContainer.querySelector(`#anno-view-${id}`);
+    if (target) {
+      const offsetTop = target.offsetTop;
+      this.commentContainer.scrollTo({ top: offsetTop });
+      pageIndex += 1;
+      const targetPage = this.#pages.get(pageIndex);
+      if (!targetPage) {
+        return;
+      }
+      const targetEditor = targetPage.editors.find(
+        editor => editor.editorId === id
+      );
+      targetEditor.container.focus();
+    }
+  }
 }
 
 class PDFAnnotationComment {
@@ -230,6 +259,12 @@ class PDFAnnotationComment {
   #boundFocusIn = this.onfocusIn.bind(this);
 
   #boundFocusOut = this.onfocusOut.bind(this);
+
+  #noteInstance = null;
+
+  #boundNoteInstanceConfirm = this.onNoteInstanceConfirm.bind(this);
+
+  #boundNoteInstanceCancel = this.onNoteInstanceCancel.bind(this);
 
   constructor(parentContainer, options, parent) {
     this.parent = parent;
@@ -245,10 +280,13 @@ class PDFAnnotationComment {
     const container = document.createElement("div");
     container.className = "comment-card";
     container.tabIndex = -1;
+    container.id = `anno-view-${options.editorParams.id}`;
     const main = document.createElement("div");
     main.className = "comment-card-main";
     main.append(this.renderMainContent(options));
-    main.append(this.renderMainHeader(options));
+    if (options.creator.name) {
+      main.append(this.renderMainHeader(options));
+    }
     container.append(main);
     this.container = container;
     this.bindEvent("container");
@@ -267,10 +305,11 @@ class PDFAnnotationComment {
     const editorParams = options.editorParams;
     const span = document.createElement("span");
     span.className = "comment-title-wrap";
+    let innerSpan;
     switch (editorParams.name) {
       case "highlightEditor":
         span.className += ` type-${AnnotationEditorType[editorParams.mode]}`;
-        const innerSpan = document.createElement("span");
+        innerSpan = document.createElement("span");
         innerSpan.className = "comment-title";
         innerSpan.textContent = editorParams.text;
         if (editorParams.mode === AnnotationEditorType.HIGHLIGHT) {
@@ -283,6 +322,21 @@ class PDFAnnotationComment {
           span.style.textDecorationColor = editorParams.color;
         }
         span.append(innerSpan);
+        break;
+      case "noteEditor":
+        if (editorParams.content) {
+          span.className += ` type-${AnnotationEditorType[editorParams.mode]}`;
+          innerSpan = document.createElement("span");
+          innerSpan.className = "comment-title";
+          innerSpan.textContent = editorParams.content;
+          span.append(innerSpan);
+        } else {
+          this.#noteInstance = new TextareaPrompt({
+            parentElement: span,
+            onConfirm: this.#boundNoteInstanceConfirm,
+            onCancel: this.#boundNoteInstanceCancel,
+          });
+        }
         break;
     }
     return span;
@@ -339,6 +393,11 @@ class PDFAnnotationComment {
 
   onfocusIn() {
     this.container.classList.add("is-selected");
+    // 存在注解输入框
+    if (this.#noteInstance) {
+      this.#noteInstance.input.focus();
+      return;
+    }
     this.parent.handleCommentFocusIn(this);
   }
 
@@ -351,6 +410,14 @@ class PDFAnnotationComment {
       return;
     }
     this.container.classList.remove("is-selected");
+  }
+
+  onNoteInstanceConfirm(value) {
+    console.log('Confirm value', value);
+  }
+
+  onNoteInstanceCancel(value) {
+    console.log('Confirm value', value);
   }
 }
 

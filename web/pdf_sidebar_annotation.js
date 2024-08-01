@@ -225,11 +225,11 @@ class PDFSidebarAnnotation {
       this.close(evt);
     } else {
       this.open();
+      this.eventBus.dispatch("sidebarannotationtoggle", {
+        source: this,
+        isOpen: this.isOpen,
+      });
     }
-    this.eventBus.dispatch("sidebarannotationtoggle", {
-      source: this,
-      isOpen: this.isOpen,
-    });
   }
 
   #dispatchEvent() {
@@ -329,6 +329,14 @@ class PDFSidebarAnnotation {
           this.eventBus.dispatch("resize", { source: this });
         }
       });
+    });
+
+    this.eventBus._on("pdfsidebarannotationopenstate", ({ toOpen }) => {
+      if (toOpen) {
+        this.open();
+      } else {
+        this.close();
+      }
     });
   }
 

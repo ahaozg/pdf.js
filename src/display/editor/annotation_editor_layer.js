@@ -28,6 +28,7 @@ import { AnnotationEditor } from "./editor.js";
 import { FreeTextEditor } from "./freetext.js";
 import { HighlightEditor } from "./highlight.js";
 import { InkEditor } from "./ink.js";
+import { NoteEditor } from "./note.js";
 import { setLayerDimensions } from "../display_utils.js";
 import { StampEditor } from "./stamp.js";
 
@@ -84,7 +85,7 @@ class AnnotationEditorLayer {
   static _initialized = false;
 
   static #editorTypes = new Map(
-    [FreeTextEditor, InkEditor, StampEditor, HighlightEditor].map(type => [
+    [FreeTextEditor, NoteEditor, InkEditor, StampEditor, HighlightEditor].map(type => [
       type._editorType,
       type,
     ])
@@ -373,7 +374,13 @@ class AnnotationEditorLayer {
       if (this.#uiManager.getMode() === AnnotationEditorType.HIGHLIGHT) {
         this.enableTextSelection();
       }
-      this.#textLayer.div.classList.add("highlighting");
+      const tempClass = {
+        [AnnotationEditorType.HIGHLIGHT]: "highlighting",
+        [AnnotationEditorType.UNDERLINE]: "underlining",
+        [AnnotationEditorType.STRIKETHROUGH]: "striking",
+        [AnnotationEditorType.NOTE]: "noting",
+      };
+      this.#textLayer.div.classList.add(tempClass[this.#uiManager.getMode()]);
     }
   }
 
@@ -385,7 +392,21 @@ class AnnotationEditorLayer {
         this.#boundTextLayerPointerDown
       );
       this.#boundTextLayerPointerDown = null;
-      this.#textLayer.div.classList.remove("highlighting");
+      const tempClass = {
+        [AnnotationEditorType.HIGHLIGHT]: ["highlighting"],
+        [AnnotationEditorType.UNDERLINE]: ["underlining"],
+        [AnnotationEditorType.STRIKETHROUGH]: ["striking"],
+        [AnnotationEditorType.NOTE]: ["noting"],
+        [AnnotationEditorType.NONE]: [
+          "highlighting",
+          "underlining",
+          "striking",
+          "noting",
+        ],
+      };
+      this.#textLayer.div.classList.remove(
+        ...(tempClass[this.#uiManager.getMode()] || [])
+      );
     }
   }
 
@@ -633,8 +654,8 @@ class AnnotationEditorLayer {
       ? new editorType.prototype.constructor(params)
       : null;
     console.log("createNewEditor -> retVal", retVal);
-    if (retVal) {
-      this.#uiManager.onEditorAddComplete && this.#uiManager.onEditorAddComplete(retVal);
+    if (retVal && this.#uiManager.onEditorAddComplete) {
+      this.#uiManager.onEditorAddComplete(retVal);
     }
     return retVal;
   }

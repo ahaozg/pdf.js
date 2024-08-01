@@ -1,6 +1,6 @@
 import { getPdfFilenameFromUrl } from "pdfjs-lib";
-import { AnnotationEditorPrefix } from "../../shared/util.js";
 import { HighlightEditor } from "./highlight.js";
+import { NoteEditor } from "./note.js";
 
 const storageKey = getPdfFilenameFromUrl(window.location.href);
 function getInitAnnotation() {
@@ -9,7 +9,9 @@ function getInitAnnotation() {
 }
 
 function setAnnotationData(data = []) {
-  window.localStorage.setItem(storageKey, JSON.stringify(data));
+  // 注解内容为空时，暂不存储，等待用户输入内容
+  const newData = data.filter(i => !(i.name === "noteEditor" && !i.content));
+  window.localStorage.setItem(storageKey, JSON.stringify(newData));
 }
 
 function getRandomForUUID() {
@@ -38,6 +40,8 @@ class EditorParamsConverter {
     switch (name) {
       case "highlightEditor":
         return this.fromHighlight(editor);
+      case "noteEditor":
+        return this.fromNoteEditor(editor);
       default:
         return null;
     }
@@ -52,6 +56,12 @@ class EditorParamsConverter {
     params.mode = editor.getMode();
     params.methodOfCreation = editor.getMethodOfCreation();
     params.boxes = this.cloneBoxes(editor.getBoxes());
+    return params;
+  }
+
+  fromNoteEditor(editor) {
+    const params = this.fromCommon(editor);
+    params.content = editor.content;
     return params;
   }
 
@@ -119,7 +129,7 @@ class EditorDisplayController {
       }
     }
     // 设置layer的可见状态
-    if (lastValidParams) {
+    if (lastValidParams && lastValidParams.mode) {
       this.#uiManager.updateToolbar(lastValidParams.mode);
       this.#uiManager.updateToolbar(oldMode);
     }
@@ -160,6 +170,7 @@ class EditorDisplayController {
     }
 
     const params = Object.assign({}, editorParams);
+    console.log('doshow->params', params);
     // params.fromCommand = true;
     params.uiManager = this.#uiManager;
     params.parent = layer;
@@ -169,6 +180,10 @@ class EditorDisplayController {
     switch (params.name) {
       case "highlightEditor":
         editor = new HighlightEditor(params);
+        layer.add(editor);
+        break;
+      case "noteEditor":
+        editor = new NoteEditor(params);
         layer.add(editor);
         break;
     }
@@ -274,13 +289,17 @@ class AnnotationEditorManager {
     console.log("data-onEditorAddComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
     if (params) {
-      this.#dataMap.set(params.id, {
+      const data = {
         annoId: params.id,
         editorParams: params,
         comment: [],
         creator: { name: "匿名" },
         createTime: Date.now(),
-      });
+      };
+      if (params.name === "noteEditor" && !params.content) {
+        data.creator.name = "";
+      }
+      this.#dataMap.set(params.id, data);
       this.updateStore("add", this.#dataMap.get(params.id));
     }
   }
