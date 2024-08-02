@@ -3273,7 +3273,6 @@ function beforeUnload(evt) {
 }
 
 function webViewerAnnotationEditorStatesChanged(data) {
-  console.log("webViewerAnnotationEditorStatesChanged", data);
   PDFViewerApplication.externalServices.updateEditorStates(data);
 }
 

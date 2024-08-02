@@ -723,7 +723,6 @@ class AnnotationEditorLayer {
     if (editor) {
       this.add(editor);
     }
-    console.log("createAndAddNewEditor -> editor", editor);
     return editor;
   }
 
@@ -787,7 +786,6 @@ class AnnotationEditorLayer {
    * @param {PointerEvent} event
    */
   pointerup(event) {
-    console.log("annotation edotor layer pointerup", event);
     const { isMac } = FeatureTest.platform;
     if (event.button !== 0 || (event.ctrlKey && isMac)) {
       // Don't create an editor on right click.
@@ -825,7 +823,6 @@ class AnnotationEditorLayer {
    * @param {PointerEvent} event
    */
   pointerdown(event) {
-    console.log("annotation editor layer pointerdown", event);
     if (this.#uiManager.getMode() === AnnotationEditorType.HIGHLIGHT) {
       this.enableTextSelection();
     }

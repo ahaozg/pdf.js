@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+.commit-wrap,
 .dialog {
   --dialog-bg-color: white;
   --dialog-border-color: white;
@@ -94,6 +95,8 @@
     --button-primary-hover-bg-color: AccentColor;
     --button-primary-hover-fg-color: AccentColorText;
   }
+}
+.dialog {
 
   font: message-box;
   font-size: 13px;

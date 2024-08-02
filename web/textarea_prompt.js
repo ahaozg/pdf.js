@@ -15,7 +15,8 @@ export class TextareaPrompt {
     parentElement,
     value = "",
     maxlength = 1000,
-    placeholder = "Alt+Enter换行(限1000字)",
+    // placeholder = "Alt+Enter换行(限1000字)",
+    placeholder = "限1000字",
     confirmButtonText = "评论",
     cancelButtonText = "取消",
     onFocus = () => {},
@@ -42,6 +43,7 @@ export class TextareaPrompt {
   init() {
     // 创建 textarea 元素
     const input = document.createElement("textarea");
+    input.className = "commit-input"
     input.placeholder = this.placeholder;
     input.maxlength = this.maxlength;
     input.value = this.defaultValue;
@@ -53,14 +55,14 @@ export class TextareaPrompt {
 
     // 创建确认按钮
     const confirmButton = document.createElement("button");
-    confirmButton.className = "primaryButton";
+    confirmButton.className = "button primaryButton";
     confirmButton.textContent = this.confirmButtonText;
     confirmButton.tabIndex = 0;
     confirmButton.addEventListener("click", this.#boundOnConfirm);
 
     // 创建取消按钮
     const cancelButton = document.createElement("button");
-    cancelButton.className = "secondaryButton";
+    cancelButton.className = "button secondaryButton";
     cancelButton.textContent = this.cancelButtonText;
     confirmButton.tabIndex = 0;
     cancelButton.addEventListener("click", this.#boundOnCancel);
@@ -72,6 +74,7 @@ export class TextareaPrompt {
 
     // 创建一个容器来包装所有元素
     const container = document.createElement("div");
+    container.className = "commit-wrap"
     container.append(input);
     container.append(buttons);
 
@@ -113,6 +116,11 @@ export class TextareaPrompt {
   }
 
   bindOnBlur(e) {
+    const relatedTarget = e.relatedTarget;
+    if (relatedTarget === this.cancelButton || relatedTarget === this.confirmButton) {
+      this.input.focus();
+      return;
+    }
     // eslint-disable-next-line no-unused-expressions
     this.onBlur && this.onBlur(e);
   }
@@ -149,22 +157,28 @@ export class TextareaPrompt {
     if (e) {
       e.stopPropagation();
     }
-    // eslint-disable-next-line no-unused-expressions
-    this.onConfirm && this.onConfirm(this.input.value);
-    this.preValue = this.input.value;
+    if (!this.input.value) {
+      this.input.focus();
+      return;
+    }
+    const value = this.input.value;
+    this.preValue = value;
     // 清空输入框
     this.input.value = "";
+    // eslint-disable-next-line no-unused-expressions
+    this.onConfirm && this.onConfirm(value);
   }
 
   bindOnCancel(e) {
     if (e) {
       e.stopPropagation();
     }
-    // eslint-disable-next-line no-unused-expressions
-    this.onCancel && this.onCancel(this.input.value);
-    this.preValue = this.input.value;
+    const value = this.input.value;
+    this.preValue = value;
     // 清空输入框
     this.input.value = "";
+    // eslint-disable-next-line no-unused-expressions
+    this.onCancel && this.onCancel(value);
   }
 }
 

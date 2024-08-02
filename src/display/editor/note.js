@@ -89,12 +89,17 @@ class NoteEditor extends AnnotationEditor {
 
   constructor(params) {
     super({ ...params, name: "noteEditor" });
+    this.content = params.content || "";
     this._isDraggable = true;
   }
 
   /** @inheritdoc */
   static initialize(l10n, uiManager) {
     AnnotationEditor.initialize(l10n, uiManager);
+  }
+
+  getMode() {
+    return NoteEditor._editorType;
   }
 
   /**
@@ -108,7 +113,6 @@ class NoteEditor extends AnnotationEditor {
 
   /** @inheritdoc */
   rebuild() {
-    console.log("rebuild");
     if (!this.parent) {
       return;
     }
@@ -165,23 +169,23 @@ class NoteEditor extends AnnotationEditor {
     this.enableEditMode();
     this.div.focus();
 
-    this._uiManager._eventBus.dispatch("annotationeditormodechanged", {
-      source: this,
-      mode: AnnotationEditorType.NONE,
-    });
+    if (!this._uiManager.getInitStatus()) {
+      this._uiManager._eventBus.dispatch("switchannotationeditormode", {
+        source: this,
+        mode: AnnotationEditorType.NONE,
+      });
 
-    this._uiManager.updateMode(AnnotationEditorType.NONE);
+      this._uiManager._eventBus.dispatch("pdfsidebarannotationopenstate", {
+        source: this,
+        toOpen: true,
+      });
 
-    this._uiManager._eventBus.dispatch("pdfsidebarannotationopenstate", {
-      source: this,
-      toOpen: true,
-    });
-
-    this._uiManager._eventBus.dispatch("annotationviewerpositionbyid", {
-      source: this,
-      id: this.id,
-      pageIndex: this.pageIndex,
-    });
+      this._uiManager._eventBus.dispatch("annotationviewerpositionbyid", {
+        source: this,
+        id: this.id,
+        pageIndex: this.pageIndex,
+      });
+    }
   }
 
   /** @inheritdoc */
@@ -204,7 +208,6 @@ class NoteEditor extends AnnotationEditor {
    * @returns {undefined}
    */
   commit() {
-    console.log("commit");
     if (!this.isInEditMode()) {
       return;
     }
@@ -280,6 +283,17 @@ class NoteEditor extends AnnotationEditor {
     bindEvents(this, this.div, ["click"]);
 
     return this.div;
+  }
+
+  updateContent({ inputType, value } = {}) {
+    if (inputType === "confirm") {
+      this.content = value;
+      if (this._uiManager.onEditorEditComplete) {
+        this._uiManager.onEditorEditComplete(this);
+      }
+    } else if (inputType === "cancel" && !this.content) {
+      this.remove();
+    }
   }
 
   /** @inheritdoc */

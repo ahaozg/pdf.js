@@ -182,6 +182,9 @@ class PDFAnnotationViewer {
       targetPage.editors[targetIndex].destroy();
       targetPage.editors.splice(targetIndex, 1);
     }
+    if (targetPage.editors.length === 0) {
+      targetPage.pageContainer.hidden = true;
+    }
   }
 
   onEditorFocusOut({ source, event }) {
@@ -262,6 +265,8 @@ class PDFAnnotationComment {
 
   #noteInstance = null;
 
+  #boundNoteInstanceBlur = this.onNoteInstanceBlur.bind(this);
+
   #boundNoteInstanceConfirm = this.onNoteInstanceConfirm.bind(this);
 
   #boundNoteInstanceCancel = this.onNoteInstanceCancel.bind(this);
@@ -284,9 +289,7 @@ class PDFAnnotationComment {
     const main = document.createElement("div");
     main.className = "comment-card-main";
     main.append(this.renderMainContent(options));
-    if (options.creator.name) {
-      main.append(this.renderMainHeader(options));
-    }
+    main.append(this.renderMainHeader(options));
     container.append(main);
     this.container = container;
     this.bindEvent("container");
@@ -308,7 +311,7 @@ class PDFAnnotationComment {
     let innerSpan;
     switch (editorParams.name) {
       case "highlightEditor":
-        span.className += ` type-${AnnotationEditorType[editorParams.mode]}`;
+        span.className += ` is-text type-${AnnotationEditorType[editorParams.mode]}`;
         innerSpan = document.createElement("span");
         innerSpan.className = "comment-title";
         innerSpan.textContent = editorParams.text;
@@ -325,17 +328,13 @@ class PDFAnnotationComment {
         break;
       case "noteEditor":
         if (editorParams.content) {
-          span.className += ` type-${AnnotationEditorType[editorParams.mode]}`;
+          span.className += ` is-text type-${AnnotationEditorType[editorParams.mode]}`;
           innerSpan = document.createElement("span");
           innerSpan.className = "comment-title";
           innerSpan.textContent = editorParams.content;
           span.append(innerSpan);
         } else {
-          this.#noteInstance = new TextareaPrompt({
-            parentElement: span,
-            onConfirm: this.#boundNoteInstanceConfirm,
-            onCancel: this.#boundNoteInstanceCancel,
-          });
+          this.createNoteInputInstance({ span });
         }
         break;
     }
@@ -345,15 +344,26 @@ class PDFAnnotationComment {
   renderMainHeader(options) {
     const div = document.createElement("div");
     div.className = "comment-card-main-header";
-    const user = document.createElement("span");
-    user.className = "comment-user";
-    user.textContent = options.creator.name;
-    div.append(user);
-    const time = document.createElement("span");
-    time.className = "comment-time";
-    time.textContent = timestampToYMDHMS(options.createTime);
-    div.append(time);
+    const { user, time } = this.renderMainHeaderTitle(options);
+    if (user && time) {
+      div.append(user);
+      div.append(time);
+    }
+    this.mainHeader = div;
     return div;
+  }
+
+  renderMainHeaderTitle(options) {
+    if (options.creator.name) {
+      const user = document.createElement("span");
+      user.className = "comment-user";
+      user.textContent = options.creator.name;
+      const time = document.createElement("span");
+      time.className = "comment-time";
+      time.textContent = timestampToYMDHMS(options.createTime);
+      return { user, time };
+    }
+    return {};
   }
 
   bindEvent(type) {
@@ -381,14 +391,18 @@ class PDFAnnotationComment {
   destroy() {
     this.unbindEvent();
     this.container.remove();
+    this.mainHeader = null;
     this.mainContent = null;
     this.container = null;
   }
 
   updateTitle(options) {
     this.#options = options;
-    this.mainContent.innerHTML = "";
-    this.mainContent.append(this.renderMainContentTitle(options));
+    this.mainContent.replaceChildren(this.renderMainContentTitle(options));
+    const { user, time } = this.renderMainHeaderTitle(options);
+    if (user && time) {
+      this.mainHeader.replaceChildren(user, time);
+    }
   }
 
   onfocusIn() {
@@ -412,12 +426,55 @@ class PDFAnnotationComment {
     this.container.classList.remove("is-selected");
   }
 
+  createNoteInputInstance({ span }) {
+    this.#noteInstance = new TextareaPrompt({
+      parentElement: span,
+      onBlur: this.#boundNoteInstanceBlur,
+      onConfirm: this.#boundNoteInstanceConfirm,
+      onCancel: this.#boundNoteInstanceCancel,
+    });
+  }
+
+  destroyNoteInputInstance() {
+    if (this.#noteInstance) {
+      this.#noteInstance.destroy();
+    }
+    this.#noteInstance = null;
+  }
+
+  onNoteInstanceBlur(e) {
+    const relatedTarget = e.relatedTarget;
+    const domId = relatedTarget?.id;
+    if (domId === this.editorId) {
+      return;
+    }
+    this.onNoteInstanceCancel("");
+  }
+
   onNoteInstanceConfirm(value) {
-    console.log('Confirm value', value);
+    this.destroyNoteInputInstance();
+    this.parent._eventBus.dispatch("pdfannotationcomment", {
+      source: this,
+      details: {
+        editorName: "noteEditor",
+        type: "noteInstance",
+        inputType: "confirm",
+        value,
+      },
+    });
   }
 
   onNoteInstanceCancel(value) {
-    console.log('Confirm value', value);
+    this.destroyNoteInputInstance();
+    this.parent._eventBus.dispatch("pdfannotationcomment", {
+      source: this,
+      details: {
+        editorName: "noteEditor",
+        type: "noteInstance",
+        inputType: "cancel",
+        value,
+      },
+    });
   }
 }
 

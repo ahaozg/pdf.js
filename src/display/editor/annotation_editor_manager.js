@@ -1,6 +1,6 @@
-import { getPdfFilenameFromUrl } from "pdfjs-lib";
 import { HighlightEditor } from "./highlight.js";
 import { NoteEditor } from "./note.js";
+import { getPdfFilenameFromUrl } from "../display_utils.js";
 
 const storageKey = getPdfFilenameFromUrl(window.location.href);
 function getInitAnnotation() {
@@ -61,6 +61,7 @@ class EditorParamsConverter {
 
   fromNoteEditor(editor) {
     const params = this.fromCommon(editor);
+    params.mode = editor.getMode();
     params.content = editor.content;
     return params;
   }
@@ -71,6 +72,8 @@ class EditorParamsConverter {
     params.id = editor.id;
     params.x = editor.x;
     params.y = editor.y;
+    params.pointx = editor.pointx;
+    params.pointy = editor.pointy;
     params.width = editor.width;
     params.height = editor.height;
     params.isCentered = editor._initialOptions?.isCentered;
@@ -115,6 +118,7 @@ class EditorDisplayController {
   }
 
   renderPreparedLayerAnnotations(params, layerIndex) {
+    this.#uiManager.enableInit();
     const oldMode = this.#uiManager.getMode();
     let lastValidParams = null;
     for (const [id, { editorParams }] of params) {
@@ -146,6 +150,7 @@ class EditorDisplayController {
         pageIndex: layerIndex,
       }
     );
+    this.#uiManager.disableInit();
   }
 
   show(id) {
@@ -170,7 +175,6 @@ class EditorDisplayController {
     }
 
     const params = Object.assign({}, editorParams);
-    console.log('doshow->params', params);
     // params.fromCommand = true;
     params.uiManager = this.#uiManager;
     params.parent = layer;
@@ -183,6 +187,8 @@ class EditorDisplayController {
         layer.add(editor);
         break;
       case "noteEditor":
+        params.x = params.pointx;
+        params.y = params.pointy;
         editor = new NoteEditor(params);
         layer.add(editor);
         break;
@@ -265,7 +271,6 @@ class AnnotationEditorManager {
     if (!params || params.length === 0) {
       return;
     }
-
     for (const param of params) {
       if (!param.annoId) {
         continue;
@@ -286,7 +291,6 @@ class AnnotationEditorManager {
   }
 
   onEditorAddComplete(editor) {
-    console.log("data-onEditorAddComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
     if (params) {
       const data = {
@@ -305,17 +309,19 @@ class AnnotationEditorManager {
   }
 
   onEditorEditComplete(editor) {
-    console.log("data-onEditorEditComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
     if (params) {
       const target = this.#dataMap.get(params.id);
       target.editorParams = params;
+      if (params.name === "noteEditor" && params.content) {
+        target.creator.name = "匿名";
+        target.createTime = Date.now();
+      }
       this.updateStore("edit", target);
     }
   }
 
   onEditorDeleteComplete(editor) {
-    console.log("data-onEditorDeleteComplete", editor);
     const params = this.#editorParamsConverter.convertToParams(editor);
     if (params) {
       const target = this.#dataMap.get(params.id);

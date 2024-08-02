@@ -173,6 +173,9 @@ class AnnotationEditor {
     this.x = parameters.x / width;
     this.y = parameters.y / height;
 
+    this.pointx = parameters.x;
+    this.pointy = parameters.y;
+
     this.isAttachedToDOM = false;
     this.deleted = false;
   }
@@ -1143,6 +1146,12 @@ class AnnotationEditor {
       if (!this._uiManager.endDragSession()) {
         this.#selectOnPointerEvent(event);
       }
+      const [width, height] = this.parentDimensions;
+      this.pointx = this.x * width;
+      this.pointy = this.y * height;
+
+      this._uiManager.onEditorEditComplete &&
+      this._uiManager.onEditorEditComplete(this);
     };
     window.addEventListener("pointerup", pointerUpCallback, { signal });
     // If the user is using alt+tab during the dragging session, the pointerup

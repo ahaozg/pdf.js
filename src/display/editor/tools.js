@@ -582,6 +582,8 @@ class AnnotationEditorUIManager {
 
   #isWaiting = false;
 
+  #isIniting = false;
+
   #lastActiveElement = null;
 
   #mainHighlightColorPicker = null;
@@ -619,6 +621,8 @@ class AnnotationEditorUIManager {
   #boundOnScaleChanging = this.onScaleChanging.bind(this);
 
   #boundOnRotationChanging = this.onRotationChanging.bind(this);
+
+  #boundOnPdfAnnotationComment = this.onPdfAnnotationComment.bind(this);
 
   #previousStates = {
     isEditing: false,
@@ -797,6 +801,10 @@ class AnnotationEditorUIManager {
     this._eventBus._on("pagechanging", this.#boundOnPageChanging);
     this._eventBus._on("scalechanging", this.#boundOnScaleChanging);
     this._eventBus._on("rotationchanging", this.#boundOnRotationChanging);
+    this._eventBus._on(
+      "pdfannotationcomment",
+      this.#boundOnPdfAnnotationComment
+    );
     this.#addSelectionListener();
     this.#addDragAndDropListeners();
     this.#addKeyboardManager();
@@ -835,6 +843,10 @@ class AnnotationEditorUIManager {
     this._eventBus._off("pagechanging", this.#boundOnPageChanging);
     this._eventBus._off("scalechanging", this.#boundOnScaleChanging);
     this._eventBus._off("rotationchanging", this.#boundOnRotationChanging);
+    this._eventBus._off(
+      "pdfannotationcomment",
+      this.#boundOnPdfAnnotationComment
+    );
     for (const layer of this.#allLayers.values()) {
       layer.destroy();
     }
@@ -971,6 +983,18 @@ class AnnotationEditorUIManager {
     this.viewParameters.rotation = pagesRotation;
   }
 
+  onPdfAnnotationComment({ source, details }) {
+    const { editorId } = source;
+    const { editorName } = details;
+    const targetEditor = this.getEditor(editorId);
+    if (!targetEditor) {
+      return;
+    }
+    if (editorName === "noteEditor") {
+      targetEditor.updateContent(details);
+    }
+  }
+
   #getAnchorElementForSelection({ anchorNode }) {
     return anchorNode.nodeType === Node.TEXT_NODE
       ? anchorNode.parentElement
@@ -979,7 +1003,6 @@ class AnnotationEditorUIManager {
 
   // context_menu floating_button
   highlightSelection(methodOfCreation = "", mode = this.#mode) {
-    console.log("highlightSelection", this.#mode);
     const selection = document.getSelection();
     if (!selection || selection.isCollapsed) {
       return;
@@ -1535,6 +1558,7 @@ class AnnotationEditorUIManager {
    *   keyboard action.
    */
   updateMode(mode, editId = null, isFromKeyboard = false) {
+    console.log("updateMode", this.#mode, mode);
     if (this.#mode === mode) {
       return;
     }
@@ -1659,6 +1683,18 @@ class AnnotationEditorUIManager {
       }
       layer.div.classList.toggle("waiting", mustWait);
     }
+  }
+
+  enableInit() {
+    this.#isIniting = true;
+  }
+
+  disableInit() {
+    this.#isIniting = false;
+  }
+
+  getInitStatus() {
+    return this.#isIniting;
   }
 
   /**

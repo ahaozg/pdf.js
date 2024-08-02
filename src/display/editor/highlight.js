@@ -103,7 +103,6 @@ class HighlightEditor extends AnnotationEditor {
 
   constructor(params) {
     super({ ...params, name: "highlightEditor" });
-    console.log("highlight constructor", params);
     this.color = params.color || HighlightEditor._defaultColor;
     this.#thickness = params.thickness || HighlightEditor._defaultThickness;
     this.#opacity = params.opacity || HighlightEditor._defaultOpacity;
@@ -326,7 +325,8 @@ class HighlightEditor extends AnnotationEditor {
       this.color = col;
       this.parent?.drawLayer.changeColor(this.#id, col);
       this.#colorPicker?.updateColor(col);
-      this._uiManager.onEditorEditComplete && this._uiManager.onEditorEditComplete(this);
+      this._uiManager.onEditorEditComplete &&
+      this._uiManager.onEditorEditComplete(this);
     };
     const savedColor = this.color;
     this.addCommands({
@@ -753,8 +753,6 @@ class HighlightEditor extends AnnotationEditor {
         /* isPathUpdatable = */ true,
         this.#mode
       ));
-    console.log("parent.drawLayer", parent.drawLayer);
-    console.log("this._freeHighlight", this._freeHighlight);
   }
 
   static #highlightMove(parent, event) {

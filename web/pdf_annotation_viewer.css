@@ -1,101 +1,161 @@
 .anno-comment-page {
   padding: 0 8px;
   box-sizing: border-box;
-
-  &::before {
-    content: attr(aria-label);
-    display: block;
-    margin: 20px 0 8px;
-    font-size: 14px;
-    line-height: 22px;
-  }
-
-  .comment-card {
-    margin-bottom: 8px;
-    padding: 8px;
-    background: #fff;
-    border: 1px solid rgba(13, 13, 13, .12);
-    border-radius: 8px;
-    box-sizing: border-box;
-    cursor: pointer;
-
-    &.is-selected {
-      border-color: rgba(30, 95, 199, 1);
-    }
-  }
-
-  .comment-card-main-content {
-    position: relative;
-    padding-left: 20px;
-    box-sizing: border-box;
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: 4px;
-      left: 0;
-      width: 14px;
-      height: 14px;
-      background-position: center;
-      background-size: contain;
-      background-repeat: no-repeat;
-    }
-
-    &.type-strikethrough::before {
-      background-image: var(--editor-toolbar-strikethrough-image);
-    }
-    &.type-underline::before {
-      background-image: var(--editor-toolbar-underline-image);
-    }
-    &.type-highlight::before {
-      background-image: var(--editor-toolbar-highlight-image);
-    }
-
-    &.type-underline .comment-title-wrap {
-      text-decoration: underline;
-      text-underline-position: under;
-    }
-  }
-
-  .comment-title-wrap {
-    display: block;
-    font-size: 14px;
-    line-height: 22px;
-    max-height: 66px;
-    overflow: hidden;
-    box-sizing: border-box;
-
-    &.type-strikethrough {
-      text-decoration: line-through;
-    }
-  }
-
-  .comment-title {
-    color: #3d4757;
-    box-sizing: border-box;
-  }
-
-  .comment-card-main-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 3px 0 16px 20px;
-    font-size: 14px;
-    line-height: 22px;
-    margin-top: 4px;
-
-    .comment-user {
-      margin-right: 16px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      color: rgba(13, 13, 13, .66);
-    }
-
-    .comment-time {
-      color: rgba(13, 13, 13, .46);
-      text-align: right;
-      white-space: nowrap;
-    }
-  }
 }
+.anno-comment-page::before {
+  content: attr(aria-label);
+  display: block;
+  margin: 20px 0 8px;
+  font-size: 14px;
+  line-height: 22px;
+}
+.anno-comment-page .comment-card {
+  margin-bottom: 8px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid rgba(13,13,13,0.12);
+  border-radius: 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.anno-comment-page .comment-card.is-selected {
+  border-color: #1e5fc7;
+}
+.anno-comment-page .comment-card-main-content {
+  position: relative;
+  padding-left: 20px;
+  box-sizing: border-box;
+}
+.anno-comment-page .comment-card-main-content::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.anno-comment-page .comment-card-main-content.type-strikethrough::before {
+  background-image: var(--editor-toolbar-strikethrough-image);
+}
+.anno-comment-page .comment-card-main-content.type-underline::before {
+  background-image: var(--editor-toolbar-underline-image);
+}
+.anno-comment-page .comment-card-main-content.type-highlight::before {
+  background-image: var(--editor-toolbar-highlight-image);
+}
+.anno-comment-page .comment-card-main-content.type-note::before {
+  top: 0;
+  left: -4px;
+  width: 20px;
+  height: 20px;
+  background-image: var(--editor-toolbar-note-image);
+}
+.anno-comment-page .comment-card-main-content.type-underline .comment-title-wrap {
+  text-decoration: underline;
+  text-underline-position: under;
+}
+.anno-comment-page .comment-title-wrap {
+  display: block;
+  font-size: 14px;
+  line-height: 22px;
+  box-sizing: border-box;
+}
+.anno-comment-page .comment-title-wrap.is-text {
+  max-height: 66px;
+  overflow: hidden;
+}
+.anno-comment-page .comment-title-wrap.type-strikethrough {
+  text-decoration: line-through;
+}
+.anno-comment-page .comment-title {
+  color: #3d4757;
+  box-sizing: border-box;
+}
+.anno-comment-page .comment-card-main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0 16px 20px;
+  font-size: 14px;
+  line-height: 22px;
+  margin-top: 4px;
+}
+.anno-comment-page .comment-card-main-header .comment-user {
+  margin-right: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: rgba(13,13,13,0.66);
+}
+.anno-comment-page .comment-card-main-header .comment-time {
+  color: rgba(13,13,13,0.46);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.anno-comment-page .commit-wrap .commit-input {
+  font: inherit;
+  padding: 8px;
+  width: 100%;
+  resize: none;
+  margin: 0;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid var(--textarea-border-color);
+  background: var(--textarea-bg-color);
+  color: var(--textarea-fg-color);
+}
+
+.anno-comment-page .commit-wrap .commit-input:focus {
+  outline-offset: -2px;
+  border-color: transparent;
+  outline: var(--focus-outline);
+}
+.anno-comment-page .commit-wrap .commit-input:disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+.anno-comment-page .commit-wrap .buttons {
+  text-align: right;
+}
+.anno-comment-page .commit-wrap .buttons .button {
+  border-radius: 4px;
+  border: 1px solid;
+  font: menu;
+  font-weight: 600;
+  padding: 4px 16px;
+  width: auto;
+  height: 32px;
+}
+.anno-comment-page .commit-wrap .buttons .button + .button {
+  margin-left: 8px;
+}
+.anno-comment-page .commit-wrap .buttons .button:hover {
+  cursor: pointer;
+  filter: var(--hover-filter);
+}
+.anno-comment-page .commit-wrap .buttons .button.secondaryButton {
+  color: var(--button-secondary-fg-color);
+  background-color: var(--button-secondary-bg-color);
+  border-color: var(--button-secondary-border-color);
+}
+.anno-comment-page .commit-wrap .buttons .button.secondaryButton:hover {
+  color: var(--button-secondary-hover-fg-color);
+  background-color: var(--button-secondary-hover-bg-color);
+  border-color: var(--button-secondary-hover-border-color);
+}
+.anno-comment-page .commit-wrap .buttons .button.primaryButton {
+  color: var(--button-primary-hover-fg-color);
+  background-color: var(--button-primary-hover-bg-color);
+  border-color: var(--button-primary-hover-border-color);
+  opacity: 1;
+}
+.anno-comment-page .commit-wrap .buttons .button.primaryButton:hover {
+  color: var(--button-primary-hover-fg-color);
+  background-color: var(--button-primary-hover-bg-color);
+  border-color: var(--button-primary-hover-border-color);
+}
+
