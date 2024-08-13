@@ -1,5 +1,6 @@
 import { HighlightEditor } from "./highlight.js";
 import { NoteEditor } from "./note.js";
+// eslint-disable-next-line sort-imports
 import { getPdfFilenameFromUrl } from "../display_utils.js";
 
 const storageKey = getPdfFilenameFromUrl(window.location.href);
@@ -213,6 +214,8 @@ class AnnotationEditorManager {
   #boundOnAnnotationEditorLayerRendered =
     this.onAnnotationEditorLayerRendered.bind(this);
 
+  #boundOnAnnotationCommentInput = this.onAnnotationCommentInput.bind(this);
+
   #dataMap = new Map();
 
   constructor({ eventBus }) {
@@ -225,6 +228,10 @@ class AnnotationEditorManager {
     this._eventBus._on(
       "annotationeditorlayerrendered",
       this.#boundOnAnnotationEditorLayerRendered
+    );
+    this._eventBus._on(
+      "annotationcommentinput",
+      this.#boundOnAnnotationCommentInput
     );
   }
 
@@ -240,6 +247,10 @@ class AnnotationEditorManager {
     this._eventBus._off(
       "annotationeditorlayerrendered",
       this.#boundOnAnnotationEditorLayerRendered
+    );
+    this._eventBus._off(
+      "annotationcommentinput",
+      this.#boundOnAnnotationCommentInput
     );
   }
 
@@ -272,10 +283,10 @@ class AnnotationEditorManager {
       return;
     }
     for (const param of params) {
-      if (!param.annoId) {
+      if (!param.editorId) {
         continue;
       }
-      const editorId = param.annoId;
+      const editorId = param.editorId;
       this.#dataMap.set(editorId, param);
     }
     this.#editorDisplayController.renderPreparedLayerAnnotations(this.#dataMap);
@@ -294,9 +305,9 @@ class AnnotationEditorManager {
     const params = this.#editorParamsConverter.convertToParams(editor);
     if (params) {
       const data = {
-        annoId: params.id,
+        editorId: params.id,
         editorParams: params,
-        comment: [],
+        comments: [],
         creator: { name: "匿名" },
         createTime: Date.now(),
       };
@@ -350,6 +361,19 @@ class AnnotationEditorManager {
       type,
       data,
     });
+  }
+
+  onAnnotationCommentInput({ details }) {
+    const { editorId, value } = details;
+    if (this.#dataMap.has(editorId)) {
+      const data = this.#dataMap.get(editorId);
+      data.comments.push({
+        value,
+        creator: { name: "匿名" },
+        createTime: Date.now(),
+      });
+      this.updateStore("edit", data);
+    }
   }
 }
 

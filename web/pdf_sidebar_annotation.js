@@ -183,6 +183,12 @@ class PDFSidebarAnnotation {
     // }
   }
 
+  setSidebarWidth(width) {
+    if (width) {
+      this.#updateWidth(width);
+    }
+  }
+
   open() {
     if (this.isOpen) {
       return;
@@ -367,6 +373,10 @@ class PDFSidebarAnnotation {
     this.#width = width;
 
     docStyle.setProperty(SIDEBAR_WIDTH_VAR, `${width}px`);
+    this.eventBus.dispatch("annotationsidebarresize", {
+      source: this,
+      width: this.#width,
+    });
     return true;
   }
 

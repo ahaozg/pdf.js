@@ -15,8 +15,7 @@ export class TextareaPrompt {
     parentElement,
     value = "",
     maxlength = 1000,
-    // placeholder = "Alt+Enter换行(限1000字)",
-    placeholder = "限1000字",
+    placeholder = "Alt+Enter换行(限1000字)",
     confirmButtonText = "评论",
     cancelButtonText = "取消",
     onFocus = () => {},
@@ -24,6 +23,8 @@ export class TextareaPrompt {
     onChange = () => {},
     onCancel = () => {},
     onConfirm = () => {},
+    autoFocus = true,
+    id = "",
   }) {
     this.parentElement = parentElement;
     this.defaultValue = value;
@@ -37,13 +38,13 @@ export class TextareaPrompt {
     this.onChange = onChange;
     this.onCancel = onCancel;
     this.onConfirm = onConfirm;
-    this.init();
+    this.init({ autoFocus, id });
   }
 
-  init() {
+  init({ autoFocus = true, id = "" }) {
     // 创建 textarea 元素
     const input = document.createElement("textarea");
-    input.className = "commit-input"
+    input.className = "commit-input";
     input.placeholder = this.placeholder;
     input.maxlength = this.maxlength;
     input.value = this.defaultValue;
@@ -52,6 +53,10 @@ export class TextareaPrompt {
     input.addEventListener("blur", this.#boundOnBlur);
     input.addEventListener("change", this.#boundOnChange);
     input.addEventListener("keydown", this.#boundOnKeyDown);
+
+    const calcDiv = document.createElement("div");
+    calcDiv.className = "calc-height";
+    calcDiv.textContent = this.defaultValue;
 
     // 创建确认按钮
     const confirmButton = document.createElement("button");
@@ -74,8 +79,12 @@ export class TextareaPrompt {
 
     // 创建一个容器来包装所有元素
     const container = document.createElement("div");
-    container.className = "commit-wrap"
+    container.className = "commit-wrap";
+    if (id) {
+      container.id = id;
+    }
     container.append(input);
+    container.append(calcDiv);
     container.append(buttons);
 
     // 将容器添加到父元素中
@@ -83,14 +92,21 @@ export class TextareaPrompt {
 
     // 保存引用以便后续操作
     this.input = input;
+    this.calcDiv = calcDiv;
     this.container = container;
     this.confirmButton = confirmButton;
     this.cancelButton = cancelButton;
 
-    input.focus();
+    if (autoFocus) {
+      input.focus();
+    }
   }
 
   destroy() {
+    if (this._isDestroyed) {
+      return;
+    }
+    this._isDestroyed = true;
     this.input.removeEventListener("focus", this.#boundOnFocus);
     this.input.removeEventListener("blur", this.#boundOnBlur);
     this.input.removeEventListener("change", this.#boundOnChange);
@@ -105,6 +121,7 @@ export class TextareaPrompt {
 
     // 清空引用，帮助垃圾回收
     this.input = null;
+    this.calcDiv = null;
     this.container = null;
     this.confirmButton = null;
     this.cancelButton = null;
@@ -117,7 +134,10 @@ export class TextareaPrompt {
 
   bindOnBlur(e) {
     const relatedTarget = e.relatedTarget;
-    if (relatedTarget === this.cancelButton || relatedTarget === this.confirmButton) {
+    if (
+      relatedTarget === this.cancelButton ||
+      relatedTarget === this.confirmButton
+    ) {
       this.input.focus();
       return;
     }
@@ -144,25 +164,27 @@ export class TextareaPrompt {
       this.input.value = newText;
       this.input.selectionStart = endIndex;
       this.input.selectionEnd = endIndex;
-    } else if (enter) {
+    } else if (enter && !e.shiftKey) {
+      e.preventDefault();
       if (text === this.preValue) {
         this.bindOnCancel();
         return;
       }
       this.bindOnConfirm();
     }
+    this.setCalcDiv();
   }
 
   bindOnConfirm(e) {
     if (e) {
       e.stopPropagation();
     }
+    const value = this.input.value;
+    this.preValue = value;
     if (!this.input.value) {
       this.input.focus();
       return;
     }
-    const value = this.input.value;
-    this.preValue = value;
     // 清空输入框
     this.input.value = "";
     // eslint-disable-next-line no-unused-expressions
@@ -179,6 +201,18 @@ export class TextareaPrompt {
     this.input.value = "";
     // eslint-disable-next-line no-unused-expressions
     this.onCancel && this.onCancel(value);
+  }
+
+  setCalcDiv() {
+    const minHeight = 52;
+    requestAnimationFrame(() => {
+      this.calcDiv.textContent = this.input?.value || "";
+      let height = this.calcDiv?.getBoundingClientRect().height || 0;
+      height = Math.max(minHeight, height);
+      if (this.input) {
+        this.input.style.height = `${height}px`;
+      }
+    });
   }
 }
 

@@ -156,6 +156,7 @@ class TextHighlighter {
     if (matches.length === 0) {
       return;
     }
+    console.log("_renderMatches", matches);
     const { findController, pageIdx } = this;
     const { textContentItemsStr, textDivs } = this;
 

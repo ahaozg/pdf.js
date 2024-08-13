@@ -450,6 +450,8 @@ class PDFFindController {
     const pdfDocument = this._pdfDocument;
     const { type } = state;
 
+    console.log("onFind type", type);
+
     if (this.#state === null || this.#shouldDirtyMatch(state)) {
       this._dirtyMatch = true;
     }
@@ -903,6 +905,7 @@ class PDFFindController {
   }
 
   #nextMatch() {
+    console.log("#nextMatch");
     const previous = this.#state.findPrevious;
     const currentPageIndex = this._linkService.page - 1;
     const numPages = this._linkService.pagesCount;

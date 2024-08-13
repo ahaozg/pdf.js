@@ -1351,6 +1351,7 @@ const PDFViewerApplication = {
         sidebarView: SidebarView.UNKNOWN,
         scrollMode: ScrollMode.UNKNOWN,
         spreadMode: SpreadMode.UNKNOWN,
+        annotationSidebarWidth: undefined,
       })
       .catch(() => {
         /* Unable to read from storage; ignoring errors. */
@@ -1404,6 +1405,9 @@ const PDFViewerApplication = {
               spreadMode = stored.spreadMode | 0;
             }
           }
+          this.pdfSidebarAnnotation?.setSidebarWidth(
+            stored?.annotationSidebarWidth
+          );
           // Always let the user preference/view history take precedence.
           if (pageMode && sidebarView === SidebarView.UNKNOWN) {
             sidebarView = apiPageModeToSidebarView(pageMode);
@@ -1979,6 +1983,9 @@ const PDFViewerApplication = {
     eventBus._on("scalechanging", webViewerScaleChanging, { signal });
     eventBus._on("rotationchanging", webViewerRotationChanging, { signal });
     eventBus._on("sidebarviewchanged", webViewerSidebarViewChanged, { signal });
+    eventBus._on("annotationsidebarresize", webViewerAnnotationSideBarResize, {
+      signal,
+    });
     eventBus._on("pagemode", webViewerPageMode, { signal });
     eventBus._on("namedaction", webViewerNamedAction, { signal });
     eventBus._on("presentationmodechanged", webViewerPresentationModeChanged, {
@@ -2389,6 +2396,17 @@ function webViewerSidebarViewChanged({ view }) {
     PDFViewerApplication.store?.set("sidebarView", view).catch(() => {
       // Unable to write to storage.
     });
+  }
+}
+
+function webViewerAnnotationSideBarResize({ width }) {
+  if (PDFViewerApplication.isInitialViewSet) {
+    // Only update the storage when the document has been loaded *and* rendered.
+    PDFViewerApplication.store
+      ?.set("annotationSidebarWidth", width)
+      .catch(() => {
+        // Unable to write to storage.
+      });
   }
 }
 
