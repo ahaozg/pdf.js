@@ -2346,15 +2346,104 @@ class AnnotationEditorUIManager {
       if (range.collapsed) {
         continue;
       }
-      for (const { x, y, width, height } of range.getClientRects()) {
+      const rects = range.getClientRects();
+      for (let j = 0; j < rects.length; j++) {
+        const { x, y, width, height } = rects[j];
         if (width === 0 || height === 0) {
           continue;
         }
-        // 高度放大1.1倍，防止下划线与文字挨着
-        boxes.push(rotator(x, y, width, height * 1.1));
+        boxes.push({
+          x,
+          y,
+          width,
+          height,
+          text: range.toString()[j] || "",
+        });
       }
     }
-    return boxes.length === 0 ? null : boxes;
+
+    let chineseHeight = 0; // 中文高度基准
+    let chineseTop = 0; // 中文顶部基准
+    let lineHeightBox = null; // 当前行中最大高度的box
+    let lineCount = 0; // 行数
+
+    const lineInfo = [];
+
+    function setLineInfo(data) {
+      if (lineCount === lineInfo.length - 1) {
+        Object.assign(lineInfo[lineCount], data);
+      } else {
+        lineInfo.push(data);
+      }
+    }
+
+    function isEnglishLetterOrPunctuation(char) {
+      // 英文字母的Unicode范围
+      const isLetter = /^[A-Za-z]$/.test(char);
+
+      // 常见的英文标点符号
+      const punctuation = `!"#$%&'()*+,-./:;<=>?@[\\]^_\`{|}~`;
+      const isPunctuation = punctuation.includes(char);
+
+      return isLetter || isPunctuation;
+    }
+
+    for (let i = 0; i < boxes.length; i++) {
+      const box = boxes[i];
+
+      // 更新当前行的最大box
+      if (!lineHeightBox || box.height > lineHeightBox.height) {
+        lineHeightBox = box;
+      }
+
+      // 如果矩形的顶部与上一个矩形的顶部相差大于当前行的最大高度，则认为是新的一行
+      if (
+        lineHeightBox &&
+        Math.abs(box.y - lineHeightBox.y) > lineHeightBox.height
+      ) {
+        lineCount++;
+        setLineInfo({
+          lineHeight: lineHeightBox.height,
+          lineTop: lineHeightBox.y,
+        });
+        lineHeightBox = null;
+        chineseHeight = 0;
+        chineseTop = 0;
+      }
+
+      if (lineHeightBox && i === boxes.length - 1) {
+        setLineInfo({
+          lineHeight: lineHeightBox.height,
+          lineTop: lineHeightBox.y,
+        });
+      }
+
+      // 检查是否包含汉字
+      const text = box.text;
+      const charCode = text.charCodeAt(0);
+      // 判断是不是汉字，选最大的汉字
+      if (
+        !isEnglishLetterOrPunctuation(charCode) &&
+        box.height > chineseHeight
+      ) {
+        chineseHeight = box.height;
+        chineseTop = box.y;
+        // 缩小一点
+        setLineInfo({ chineseTop, chineseHeight: chineseHeight * 0.9 });
+      }
+
+      box.lineCount = lineCount;
+    }
+
+    const rotatorBoxes = [];
+    boxes.forEach(box => {
+      const info = lineInfo[box.lineCount];
+      const y = info.chineseTop || info.lineTop;
+      const height = info.chineseHeight || info.lineHeight;
+      rotatorBoxes.push(rotator(box.x, y, box.width, height));
+    });
+
+    return rotatorBoxes.length === 0 ? null : rotatorBoxes;
   }
 
   addChangedExistingAnnotation({ annotationElementId, id }) {

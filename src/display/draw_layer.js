@@ -95,7 +95,13 @@ class DrawLayer {
     return clipPathId;
   }
 
-  highlight(outlines, color, opacity, isPathUpdatable = false, mode = AnnotationEditorType.HIGHLIGHT) {
+  highlight(
+    outlines,
+    color,
+    opacity,
+    isPathUpdatable = false,
+    mode = AnnotationEditorType.HIGHLIGHT
+  ) {
     const id = this.#id++;
     const root = this.#createSVG(outlines.box);
     root.classList.add("highlight");
@@ -122,9 +128,11 @@ class DrawLayer {
       default:
         break;
     }
-    let pathId2 = '';
-    if (mode === AnnotationEditorType.UNDERLINE ||
-      mode === AnnotationEditorType.STRIKETHROUGH) {
+    let pathId2 = "";
+    if (
+      mode === AnnotationEditorType.UNDERLINE ||
+      mode === AnnotationEditorType.STRIKETHROUGH
+    ) {
       path.setAttribute("fill-opacity", 0);
       const path2 = DrawLayer._svgFactory.createElement("path");
       defs.append(path2);
@@ -138,7 +146,11 @@ class DrawLayer {
     }
 
     // Create the clipping path for the editor div.
-    const clipPathId = this.#createClipPath(defs, pathId, pathId2 ? [pathId2] : []);
+    const clipPathId = this.#createClipPath(
+      defs,
+      pathId,
+      pathId2 ? [pathId2] : []
+    );
 
     const use = DrawLayer._svgFactory.createElement("use");
     root.append(use);
